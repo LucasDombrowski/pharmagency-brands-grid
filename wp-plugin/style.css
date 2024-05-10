@@ -1,0 +1,10 @@
+.pharmagency-brand-grid-container{
+    display: grid;
+    row-gap: 16px;
+    column-gap: 16px;
+}
+
+.pharmagency-brand-grid-image{
+    width: 100%;
+    aspect-ratio: 1/1;
+}
