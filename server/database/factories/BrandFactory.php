@@ -20,10 +20,13 @@ class BrandFactory extends Factory
 
     public function definition(): array
     {
+        $faker = \Faker\Factory::create();
+        $faker->addProvider(new \Smknstd\FakerPicsumImages\FakerPicsumImagesProvider($faker));
+
         return [
             "name"=>fake()->company(),
-            "png_url"=>fake()->url(),
-            "jpg_url"=>fake()->url()
+            "png_url"=>$faker->imageUrl(500,500),
+            "jpg_url"=>$faker->imageUrl(500,500,null,true,false,false,"jpg")
         ];
     }
 }

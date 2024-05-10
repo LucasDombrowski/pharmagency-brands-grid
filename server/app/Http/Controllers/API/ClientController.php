@@ -9,6 +9,9 @@ use Dirape\Token\Token;
 
 class ClientController extends Controller
 {
+    public function __construct(){
+        $this->middleware('auth:sanctum')->except(["showToken","show"]);   
+    }
     /**
      * Display a listing of the resource.
      */
@@ -40,11 +43,11 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
-        return response()->json($client->load("categories"));
+        return response()->json($client->load("categories","categories.brands"));
     }
 
     public function showToken(string $token){
-        return response()->json(Client::where("token",$token)->firstOrFail()->load("categories"));
+        return response()->json(Client::where("token",$token)->firstOrFail()->load("categories","categories.brands"));
     }
 
     /**
