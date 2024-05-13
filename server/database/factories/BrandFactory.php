@@ -24,7 +24,7 @@ class BrandFactory extends Factory
         $faker->addProvider(new \Smknstd\FakerPicsumImages\FakerPicsumImagesProvider($faker));
 
         return [
-            "name"=>fake()->company(),
+            "name"=>parseBrandName(fake()->company()),
             "png_url"=>$faker->imageUrl(500,500),
             "jpg_url"=>$faker->imageUrl(500,500,null,true,false,false,"jpg")
         ];

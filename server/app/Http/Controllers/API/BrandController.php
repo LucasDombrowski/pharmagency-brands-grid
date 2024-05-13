@@ -31,7 +31,7 @@ class BrandController extends Controller
         }
 
         if($request->filled("query")){
-            $query = $query->where("name","like",$request->input("query")."%");
+            $query = $query->where("name","like",parseBrandName($request->input("query"))."%");
         }
 
         if(!empty($request->all())){
