@@ -7,6 +7,10 @@ use App\Models\Client;
 use Illuminate\Http\Request;
 use Dirape\Token\Token;
 
+/**
+ * @tags Clients
+ */
+
 class ClientController extends Controller
 {
     public function __construct(){
@@ -14,6 +18,7 @@ class ClientController extends Controller
     }
     /**
      * Display a listing of the resource.
+     * @unauthenticated
      */
     public function index()
     {
@@ -40,11 +45,17 @@ class ClientController extends Controller
 
     /**
      * Display the specified resource.
+     * @unauthenticated
      */
     public function show(Client $client)
     {
         return response()->json($client->load("categories","categories.brands"));
     }
+
+    /**
+     * Display the specified resource.
+     * @unauthenticated
+     */
 
     public function showToken(string $token){
         return response()->json(Client::where("token",$token)->firstOrFail()->load("categories","categories.brands"));

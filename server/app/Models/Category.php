@@ -16,4 +16,8 @@ class Category extends Model
     public function brands(){
         return $this->belongsToMany(Brand::class,"brand_category","category_id","brand_id");
     }
+
+    public function client(){
+        return $this->belongsTo(Client::class,"client_id","id");
+    }
 }

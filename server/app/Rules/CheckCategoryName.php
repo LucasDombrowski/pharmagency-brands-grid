@@ -15,15 +15,21 @@ class CheckCategoryName implements ValidationRule
      * @param  \Closure(string): \Illuminate\Translation\PotentiallyTranslatedString  $fail
      */
 
-     public function __construct(Client $client){
+     public function __construct(Client $client, Category $category = null){
         $this->client = $client;
+        $this->category = $category;
      }  
 
     public $client;
+    public $category;
 
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if($this->client->categories->where("name",$value)->first() instanceof Category){
+        $query = $this->client->categories->where("name",$value);
+        if($this->category instanceof Category){
+            $query = $query->where("id","!=",$this->category->id);
+        }
+        if($query->first() instanceof Category){
             $fail("The client is already associated with this category");
         }
     }
