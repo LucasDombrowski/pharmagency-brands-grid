@@ -33,7 +33,7 @@ class AuthController extends Controller
             "password"=>"required|string"
         ]);
 
-        if(Auth::attempt($request->all())){
+        if(Auth::guard("web")->attempt($request->all())){
             $user = User::where("email",$request->input("email"))->first();
             $token = $user->createToken("auth_token")->plainTextToken;
 
