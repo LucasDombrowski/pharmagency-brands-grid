@@ -16,7 +16,7 @@ class AuthController extends Controller
     /**
      * Admin login
      * 
-     * If the email / password combination matches the current records, you will receive the Bearer token to put in the Authorization header at the restricted endpoints.
+     * If the email/password combination matches the current records, you will receive the Bearer token to put in the Authorization header at the protected endpoints. 
      * @unauthenticated
      */
     public function login(Request $request) {
@@ -46,7 +46,7 @@ class AuthController extends Controller
             ]);
         } else {
             /**
-             * Thrown error when the email / password combination doesnt match the current records.
+             * Thrown error when the email / password combination does not match the current records.
              * @status 401
              */
             return response()->json(["message"=>"Wrong credentials"],401);

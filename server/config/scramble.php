@@ -35,7 +35,15 @@ return [
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-    'description' => '',
+    'description' => "We created this API to gather all of the informations and processes related to the Pharmagency client brands partnership. \
+    \
+    Each clients can have his own brand category, even if its name is taken by anyone else. The brands and the categories are associated with a 'many to many' relationship in the database. Therefore, a brand can be included in different categories. \
+    \
+    Some processes are protected by a Bearer JWT Token, more informations [here](/operations/auth.login). \
+    \
+    ======= \
+    ***Lucas Dombrowski*** \
+    lucas.dombrowski.pro@gmail.com",
     ],
 
     /*

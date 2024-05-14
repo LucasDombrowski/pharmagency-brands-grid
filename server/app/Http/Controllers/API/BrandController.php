@@ -108,7 +108,7 @@ class BrandController extends Controller
         return 
         /**
          * Returns the created brand
-         * @body array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}
+         * @body array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: true}
          */
         response()->json($brand,201);
     }
@@ -128,7 +128,7 @@ class BrandController extends Controller
     }
 
     /**
-     * Update a specific brand datas.
+     * Update a specific brand data.
      */
     public function update(Request $request, Brand $brand)
     {
