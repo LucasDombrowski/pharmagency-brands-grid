@@ -13,7 +13,13 @@ class Category extends Model
 
     protected $fillable = ["name","client_id"];
 
+    protected $hidden = ['pivot'];
+
     public function brands(){
         return $this->belongsToMany(Brand::class,"brand_category","category_id","brand_id");
+    }
+
+    public function client(){
+        return $this->belongsTo(Client::class,"client_id","id");
     }
 }
