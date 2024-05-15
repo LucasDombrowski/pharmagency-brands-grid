@@ -54,7 +54,7 @@ class BrandController extends Controller
         }
 
         if(!empty($request->all())){
-            $query = $query->take(5);
+            $query = $query->take(10);
         }
 
         $results = $query->get();

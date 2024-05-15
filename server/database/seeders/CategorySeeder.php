@@ -17,7 +17,7 @@ class CategorySeeder extends Seeder
         for($i=0;$i<20;$i++){
             $category = Category::factory()->count(1)->create()[0];
             for($j=0;$j<5;$j++){
-                $brand = Brand::factory()->count(1)->create();
+                $brand = Brand::inRandomOrder()->first();
                 $category->brands()->attach($brand);
             }
         }
