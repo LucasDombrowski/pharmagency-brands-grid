@@ -9,29 +9,21 @@ function registerStyles(){
 
 function useApi(int $id){
     $url = "http://localhost:8000/api";
-    $data = json_decode(wp_remote_retrieve_body(wp_remote_get($url."/clients/".$id)));
-    $res = [];
-    foreach($data->categories as $category){
-        foreach($category->brands as $brand){
-            $res[] = $brand;
-        }
-    }
-
+    $data = json_decode(wp_remote_retrieve_body(wp_remote_get($url."/clients/".$id."/brands")));
     return array_map(function($v){
         return [
             "name"=>$v->name,
             "png_url"=>$v->png_url,
             "jpg_url"=>$v->jpg_url
         ];
-    },$res);
-
-
+    },$data);
 }
 
 function display(array $data, int $cols, string $containerClass, string $imageContainerClass, string $imageClass){
     $res = "<div class='pharmagency-brand-grid-container ".$containerClass."' style='grid-template-columns: repeat(".$cols.",1fr)'>";
     foreach($data as $image){
-        $res = $res."<div class='pharmagency-brand-grid-image-container ".$imageContainerClass."'><img class='pharmagency-brand-grid-image ".$imageClass."' src='".$image["png_url"]."' alt='".$image["name"]."'/></div>";
+        $imageURL = $image["png_url"] !== null ? $image["png_url"] : $image["jpg_url"];
+        $res = $res."<div class='pharmagency-brand-grid-image-container ".$imageContainerClass."'><img class='pharmagency-brand-grid-image ".$imageClass."' src='".$imageURL."' alt='".$image["name"]."'/></div>";
     }
     $res = $res."</div>";
     return $res;
