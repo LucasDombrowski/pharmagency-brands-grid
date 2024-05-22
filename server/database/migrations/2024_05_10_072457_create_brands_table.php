@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('brands', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
+            $table->string("name")->unique();
             $table->string("png_url")->nullable();
             $table->string("jpg_url")->nullable();
             $table->boolean("validated")->default(false);

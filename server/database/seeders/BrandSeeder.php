@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Brand;
+use App\Models\Client;
 
 class BrandSeeder extends Seeder
 {
@@ -21,22 +22,26 @@ class BrandSeeder extends Seeder
             $fileURL = $url."/".$file;
             if(str_contains($file,".png")){
                 $fileName = explode(".png",$file)[0];
-                Brand::create([
-                    "name"=>parseBrandName($fileName),
-                    "png_url"=>$fileURL,
-                    "validated"=>true
-                ]);
+                if(!Brand::where("name",parseBrandName($fileName))->first() instanceof Brand){
+                    Brand::create([
+                        "name"=>parseBrandName($fileName),
+                        "png_url"=>$fileURL,
+                        "validated"=>true
+                    ]);
+                }
             } else {
                 if(str_contains($file,".jpeg")){
                     $fileName = explode(".jpeg",$file)[0];
                 } else {
                     $fileName = explode(".jpg",$file)[0];
                 }
-                Brand::create([
-                    "name"=>parseBrandName($fileName),
-                    "jpg_url"=>$fileURL,
-                    "validated"=>true
-                ]);
+                if(!Brand::where("name",parseBrandName($fileName))->first() instanceof Brand){
+                    Brand::create([
+                        "name"=>parseBrandName($fileName),
+                        "jpg_url"=>$fileURL,
+                        "validated"=>true
+                    ]);
+                }
             }
         }
     }

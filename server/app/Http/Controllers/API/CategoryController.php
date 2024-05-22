@@ -26,18 +26,18 @@ class CategoryController extends Controller
     {
         $categories = Category::all();
         if(Auth::guard('sanctum')->check()){
-           $categories->load("client");
+            $categories->load("client");
         } else {
             $categories->load([
                 "client"=> function($query){
-                    $query->select(["id","name"]);
+                    $query->select(["id","name","domain"]);
                 }
             ]);
         }
         return 
         /**
          * Returns all client categories in the database. The clients tokens will be displayed if you are authenticated.
-         * @body array{array{id: int, name: string, client_id: int, client: array{id: int, name: string, token: string|null}}}
+         * @body array{array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, token: string|null}}}
          */
         $categories;
     }
@@ -112,7 +112,7 @@ class CategoryController extends Controller
         return 
         /**
          * Returns the new client's category with its brands.
-         * @body array{id: int, name: string, client_id: int, client: array{id: int, name: string, token: string}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
+         * @body array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, token: string}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
          */
         response()->json($category->load("client","brands"),201);
 
@@ -136,7 +136,7 @@ class CategoryController extends Controller
         return 
         /**
          * Returns the client category which has the given id in the database, with its brands. The client token will be displayed if you are authenticated.
-         * @body array{id: int, name: string, client_id: int, client: array{id: int, name: string, token: string|null}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
+         * @body array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, token: string|null}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
          */
         response()->json($category);
     }
@@ -219,10 +219,9 @@ class CategoryController extends Controller
         return 
         /**
          * Returns the updated category with its brands.
-         * @body array{id: int, name: string, client_id: int, client: array{id: int, name: string, token: string}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
+         * @body array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, token: string}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
          */
         response()->json($category->load("brands"));
-    
     }
 
     /**

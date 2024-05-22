@@ -10,7 +10,7 @@ class Client extends Model
     use HasFactory;
     public $timestamps = false;
 
-    protected $fillable = ["name","token"];
+    protected $fillable = ["name","token","domain"];
     
     public function categories(){
         return $this->hasMany(Category::class,"client_id");

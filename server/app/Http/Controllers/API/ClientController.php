@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use App\Rules\FQDN;
 use Illuminate\Http\Request;
 use Dirape\Token\Token;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,7 +19,7 @@ use function Laravel\Prompts\select;
 class ClientController extends Controller
 {
     public function __construct(){
-        $this->middleware('auth:sanctum')->except(["showToken","show","index","showClientBrands"]);   
+        $this->middleware('auth:sanctum')->except(["showToken","show","index","showClientBrands","showDomain"]);   
     }
     /**
      * Display all clients.
@@ -26,14 +27,14 @@ class ClientController extends Controller
     public function index()
     {
         if(!Auth::guard("api")->check()){
-            $query = Client::select(["id","name"])->get();
+            $query = Client::select(["id","name","domain"])->get();
         } else {
             $query = Client::all();
         }
         return 
         /**
          * Returns all clients in the database. Their tokens will be revealed if you are authenticated.
-         * @body array{array{id: int, name: string, token: string|null}}
+         * @body array{array{id: int, name: string, domain: string, token: string|null}}
          */
         response()->json($query);
     }
@@ -48,17 +49,19 @@ class ClientController extends Controller
         $request->validate([
             //The client name
             "name"=>"required|string",
+            "domain"=>["required","string",new FQDN]
         ]);
 
         $client = Client::create([
             "name"=>$request->input("name"),
+            "domain"=>$request->input("domain"),
             "token"=> (new Token())->Unique('clients', 'token', 16)
         ]);
 
         return
         /**
          * Returns the created client with his unique token.
-         * @body array{id: int, name:string, token: string}
+         * @body array{id: int, name:string, domain: string, token: string}
          */ 
         response()->json($client,201);
 
@@ -75,7 +78,7 @@ class ClientController extends Controller
         return
         /**
          * Returns the client which has the given id in the database, with his categories and their brands. His token will be displayed if you are authenticated.
-         * @body array{id: int, name: string, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
+         * @body array{id: int, name: string, domain: string, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
          */
         response()->json($client->load("categories","categories.brands"));
     }
@@ -89,12 +92,29 @@ class ClientController extends Controller
 
          /**
          * Returns the client which has the given token in the database, with his categories and their brands.
-         * @body array{id: int, name: string, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
+         * @body array{id: int, name: string, domain: string, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
          */
 
         response()->json(Client::where("token",$token)->firstOrFail()->load("categories","categories.brands"));
     }
 
+    /**
+     * Find a specific client with its domain
+     */
+
+    public function showDomain(string $domain){
+        $client = Client::where("domain",$domain)->firstOrFail();
+        if(!Auth::guard("api")->check()){
+            $client->setHidden(["token"]);
+        }
+        return 
+        /**
+         * Returns the client which has the given domain in the database, with his categories and their brands. His token will be displayed if you are authenticated.
+         * @body array{id: int, name: string, domain: string, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
+         */
+        response()->json($client->load("categories","categories.brands"));
+
+    }
     /**
      * Only get a client's associated brands
      * @unauthenticated
@@ -121,6 +141,7 @@ class ClientController extends Controller
         $request->validate([
             //The client name
             "name"=>"required|string",
+            "domain"=>["required","string",new FQDN],
             //A forbidden input, do not include it in the request body
             "token"=>"prohibited"
         ]);
@@ -130,7 +151,7 @@ class ClientController extends Controller
         return
         /**
          * Returns the updated client.
-         * @body array{id: int, name:string, token: string}
+         * @body array{id: int, domain: string, name:string, token: string}
          */ 
         response()->json($client);
     }
