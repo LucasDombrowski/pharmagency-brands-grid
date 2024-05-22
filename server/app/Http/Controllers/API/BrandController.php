@@ -45,24 +45,24 @@ class BrandController extends Controller
 
         $query = Brand::query();
 
-        if($request->filled("validated") &&  $request->input("validated") == true){
-            $query = $query->where("validated",true);
-        }
-
         if($request->filled("query")){
             $query = $query->where("name","like",parseBrandName($request->input("query"))."%");
         }
 
-        if(!empty($request->all())){
-            $query = $query->take(10);
+        if($request->filled("validated")){
+            $query = $query->where("validated",$request->input("validated"));
         }
 
-        $results = $query->get();
+        if($request->has("query") && $request->input("validated")!=0){
+            $query->take(10);
+        }
+
+        $results = $query->withCount("categories")->orderBy("categories_count","desc")->get();
 
         /**
          * Returns the results.
          * * If the query parameter is null, **all** of the brands which fit with the "validated" value will be returned.
-         * * If the query parameter is not null, **the first 5 results** which fit with the "validated" value will be returned.
+         * * If the query parameter is not null, **the first 10 results** which fit with the "validated" value will be returned.
          * @body array{array{id:int, name:string, png_url:string|null,jpg_url:string|null,validated: true}}
         */
         return response()->json($results);
