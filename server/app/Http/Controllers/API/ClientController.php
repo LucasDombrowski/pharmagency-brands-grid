@@ -65,7 +65,7 @@ class ClientController extends Controller
     }
 
     /**
-     * Find a specific client
+     * Find a specific client with its id
      */
     public function show(Client $client)
     {
@@ -78,6 +78,21 @@ class ClientController extends Controller
          * @body array{id: int, name: string, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
          */
         response()->json($client->load("categories","categories.brands"));
+    }
+
+    /**
+     * Find a specific client with its token
+     */
+
+    public function showToken(string $token){
+        return 
+
+         /**
+         * Returns the client which has the given token in the database, with his categories and their brands.
+         * @body array{id: int, name: string, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
+         */
+
+        response()->json(Client::where("token",$token)->firstOrFail()->load("categories","categories.brands"));
     }
 
     /**
