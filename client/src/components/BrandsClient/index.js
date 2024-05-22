@@ -24,8 +24,11 @@ export default function BrandsClient(props){
                 id: request.data.id,
                 token: request.data.token
             });
-            setCategories(request.data.categories);
-            setCategory(request.data.categories[0]);
+            const importedCategories = request.data.categories.map((v)=>{
+                return {...v, new:false}
+            });
+            setCategories(importedCategories);
+            setCategory(importedCategories[0]);
         } catch(err){
             console.log(err);
             navigate("/");
@@ -44,6 +47,14 @@ export default function BrandsClient(props){
         }).length === 0;
     }
 
+    function getNewCategoryId(){
+        if(categories.length > 0) {
+            return Math.max(...categories.map(o => o.id)) + 1;
+        } else {
+            return 1;
+        }   
+    }
+
     async function handleClick(){
         for await(let singleCategory of categories){
             if(singleCategory.brands.length > 0){
@@ -58,7 +69,6 @@ export default function BrandsClient(props){
                         }
                     })
                 }
-                console.log(data);
                 if(!singleCategory.new){
                     try{
                         const request = await axios.post(server + "/categories/" + singleCategory.id + "?_method=PUT",data, {
@@ -110,15 +120,13 @@ export default function BrandsClient(props){
     }
 
     return (
-        <div className="w-full max-w-[1920x] mx-auto">
+        <div className="w-full max-w-[1920px] mx-auto">
             {(categories && category) ? <div className="w-full">
                 <div className="flex min-h-screen w-full">
                     <div className="grow p-10 min-h-full flex flex-col w-full">
                         <div className="grow">
                             <CategorySelector
-                            categories={categories.map((v)=>{
-                                return {...v, new: false}
-                            })}
+                            categories={categories}
                             category = {category}
                             setCategory = {(category)=>{
                                 setCategory(category);
@@ -144,10 +152,11 @@ export default function BrandsClient(props){
                             addCategory = {(name)=>{
                                 if(uniqueCategory(name)){
                                     const updatedCategories = [{
+                                        "id":getNewCategoryId(),
                                         "name":name,
                                         "brands":[],
                                         "new":true
-                                    }, ...categories, ];
+                                    }, ...categories];
                                     setCategories(updatedCategories);
                                     setCategory(updatedCategories[0]);
                                 }
@@ -160,17 +169,18 @@ export default function BrandsClient(props){
                     <div className="min-w-[20%] w-[20%] border-l-4 border-l-black px-6 py-10 ml-10 min-h-full">
                         <BrandsGrid
                         addBrand = {(brand)=>{
+                            console.log(categories);
                             if(uniqueBrand(brand)){
                                 const updatedCategory = {
                                     ...category,
                                     brands: [...category.brands, brand]
                                 };
                                 setCategory(updatedCategory);
-                                setCategories(categories.map((v)=>{
+                                setCategories([...categories].map((v)=>{
                                     if(v.id === updatedCategory.id){
-                                        return updatedCategory
+                                        return updatedCategory;
                                     } else {
-                                        return v
+                                        return v;
                                     }
                                 }));
                             }
@@ -180,8 +190,10 @@ export default function BrandsClient(props){
             </div>
             : <AddCategory
             addCategory={(name)=>{
+
                 const updatedCategories = [
                     {
+                        "id":getNewCategoryId(),
                         "name":name,
                         "brands":[],
                         "new":true

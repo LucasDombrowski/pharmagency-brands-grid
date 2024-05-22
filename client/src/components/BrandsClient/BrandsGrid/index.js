@@ -6,6 +6,7 @@ import BrandsGridInput from "./BrandsGridInput";
 
 export default function BrandsGrid(props){
     const [brands, setBrands] = useState([]);
+    const [newBrand, setNewBrand] = useState(false);
     useEffect(()=>{
         getBrands();
     },[]);
@@ -17,6 +18,11 @@ export default function BrandsGrid(props){
         } catch(err){
             console.log(err);
         }
+    }
+
+    function brandNameExists(name){
+        const request = axios.get(server + "/brands?query=" + name);
+        return request.data.length > 0;
     }
 
     return (
@@ -34,11 +40,18 @@ export default function BrandsGrid(props){
                 }}/>
             </div>
             <div className="grid grid-cols-2 gap-2 mt-6">
-            {brands.map(
-                v => <BrandsGridItem {...v} onClick = {()=>{
-                    props.addBrand(v);
-                }}/>
-            )}
+                {brands.map(
+                    v => <BrandsGridItem {...v} onClick = {()=>{
+                        props.addBrand(v);
+                    }}/>
+                )}
+                <div className="border-4 border-black aspect-square flex justify-center items-center" onClick={()=>{
+                    setNewBrand(true);
+                }}>
+                    <div className="text-xl font-bold">
+                        Ajouter
+                    </div>
+                </div>
             </div>
         </div>
     )
