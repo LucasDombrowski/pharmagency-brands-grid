@@ -24,19 +24,28 @@ class ClientController extends Controller
     /**
      * Display all clients.
      */
-    public function index()
+    public function index(Request $request)
     {
-        if(!Auth::guard("api")->check()){
-            $query = Client::select(["id","name","domain"])->get();
-        } else {
-            $query = Client::all();
+        $request->validate([
+            "query"=>"nullable|string"
+        ]);
+
+        $query = Client::query();
+
+        if($request->filled("query")){
+            $query = $query->where("name","like",$request->input("query")."%");
         }
+
+        if(!Auth::guard("sanctum")->check()){
+            $query = $query->select(["id","name","domain"]);
+        } 
+
         return 
         /**
          * Returns all clients in the database. Their tokens will be revealed if you are authenticated.
          * @body array{array{id: int, name: string, domain: string, token: string|null}}
          */
-        response()->json($query);
+        response()->json($query->get());
     }
 
     /**
@@ -72,7 +81,7 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
-        if(!Auth::guard("api")->check()){
+        if(!Auth::guard("sanctum")->check()){
             $client->setHidden(["token"]);
         }
         return
@@ -104,7 +113,7 @@ class ClientController extends Controller
 
     public function showDomain(string $domain){
         $client = Client::where("domain",$domain)->firstOrFail();
-        if(!Auth::guard("api")->check()){
+        if(!Auth::guard("sanctum")->check()){
             $client->setHidden(["token"]);
         }
         return 
