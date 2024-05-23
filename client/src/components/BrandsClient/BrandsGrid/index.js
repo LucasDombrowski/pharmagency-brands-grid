@@ -13,7 +13,7 @@ export default function BrandsGrid(props){
 
     async function getBrands(query = ""){
         try{
-            const request = await axios.get(server + "/brands?query=" + query);
+            const request = await axios.get(server + "/brands?query=" + query + "&validated=1");
             setBrands(request.data);
         } catch(err){
             console.log(err);
