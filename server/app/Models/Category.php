@@ -16,7 +16,7 @@ class Category extends Model
     protected $hidden = ['pivot'];
 
     public function brands(){
-        return $this->belongsToMany(Brand::class,"brand_category","category_id","brand_id");
+        return $this->belongsToMany(Brand::class,"brand_category","category_id","brand_id")->orderByPivot("order");
     }
 
     public function client(){

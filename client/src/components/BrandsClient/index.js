@@ -120,10 +120,10 @@ export default function BrandsClient(props){
     }
 
     return (
-        <div className="w-full max-w-[1920px] mx-auto">
-            {(categories && category) ? <div className="w-full">
-                <div className="flex min-h-screen w-full">
-                    <div className="grow p-10 min-h-full flex flex-col w-full">
+        <div className="w-full max-w-[1100px] mx-auto h-dvh">
+            {(categories && category) ? <div className="w-full h-full">
+                <div className="flex h-full w-full">
+                    <div className="grow p-10 flex flex-col w-full">
                         <div className="grow">
                             <CategorySelector
                             categories={categories}
@@ -166,7 +166,7 @@ export default function BrandsClient(props){
                             <button onClick={handleClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Sauvegarder</button>
                         </div>
                     </div>
-                    <div className="min-w-[20%] w-[20%] border-l-4 border-l-black px-6 py-10 ml-10 min-h-full">
+                    <div className="min-w-[33%] w-[33%] border-l-4 border-l-black px-6 py-10 ml-10 h-full overflow-scroll">
                         <BrandsGrid
                         addBrand = {(brand)=>{
                             console.log(categories);

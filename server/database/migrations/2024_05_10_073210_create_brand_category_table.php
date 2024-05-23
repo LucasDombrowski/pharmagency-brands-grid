@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger("brand_id")->foreign()->references("id")->on("brands");
             $table->bigInteger("category_id")->foreign()->references("id")->on("categories");
+            $table->integer("order");
         });
     }
 

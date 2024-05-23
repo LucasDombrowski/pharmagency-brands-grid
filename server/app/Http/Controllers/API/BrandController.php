@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Rules\CheckParsedBrandName;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @tags Brands
@@ -23,7 +24,7 @@ class BrandController extends Controller
      * 
      * ## Example
      * ```
-     * http://localhost:8000/api/brands?query="Lorem Ipsum"&validated=1
+     * http://localhost:8000/api/brands?query="Lorem Ipsum"&validated=1&limit=10
      * ```
      * @unauthenticated
      */
@@ -40,7 +41,11 @@ class BrandController extends Controller
             /**
              * Filter by the validation status of the brand, the value must be 0 or 1.
              */
-            "validated"=>"nullable|boolean"
+            "validated"=>"nullable|boolean",
+            /**
+             * Limit the results to a specific amount.
+             */
+            "limit"=>"nullable|integer"
         ]);
 
         $query = Brand::query();
@@ -53,16 +58,14 @@ class BrandController extends Controller
             $query = $query->where("validated",$request->input("validated"));
         }
 
-        if($request->has("query") && $request->input("validated")!=0){
-            $query->take(10);
+        if($request->filled("limit")){
+            $query = $query->take($request->input("limit"));
         }
 
         $results = $query->withCount("categories")->orderBy("categories_count","desc")->get();
 
         /**
          * Returns the results.
-         * * If the query parameter is null, **all** of the brands which fit with the "validated" value will be returned.
-         * * If the query parameter is not null, **the first 10 results** which fit with the "validated" value will be returned.
          * @body array{array{id:int, name:string, png_url:string|null,jpg_url:string|null,validated: true}}
         */
         return response()->json($results);
@@ -179,6 +182,16 @@ class BrandController extends Controller
      */
     public function destroy(Brand $brand)
     {
+        $categories = $brand->categories;
+        foreach($categories as $category){
+            $count = 1;
+            foreach($category->brands as $categoryBrand){
+                if($categoryBrand->id !== $brand->id){
+                    $category->brands()->updateExistingPivot($categoryBrand,["order"=>$count]);
+                    $count++;
+                }
+            } 
+        }
         $brand->categories()->detach();
         $brand->delete();
         return 

@@ -27,13 +27,18 @@ class ClientController extends Controller
     public function index(Request $request)
     {
         $request->validate([
-            "query"=>"nullable|string"
-        ]);
+            "query"=>"nullable|string",
+            "limit"=>"nullable|integer"
+        ]); 
 
         $query = Client::query();
 
         if($request->filled("query")){
             $query = $query->where("name","like",$request->input("query")."%");
+        }
+
+        if($request->filled("limit")){
+            $query = $query->take($request->input("limit"));
         }
 
         if(!Auth::guard("sanctum")->check()){

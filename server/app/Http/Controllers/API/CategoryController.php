@@ -85,6 +85,8 @@ class CategoryController extends Controller
             "client_id"=>$request->input("client_id")
         ]);
 
+        $count = 1;
+
         foreach($request->input("brands") as $brand){
             $brandData = [
                 "name"=>parseBrandName($brand["name"])
@@ -106,7 +108,8 @@ class CategoryController extends Controller
                 }
                 $brandModel = Brand::create($brandData);
             }
-            $category->brands()->attach($brandModel);
+            $category->brands()->attach($brandModel,["order"=>$count]);
+            $count ++;
         }
 
         return 
@@ -190,6 +193,7 @@ class CategoryController extends Controller
             $category->brands()->detach($brandToDetach);
         }
 
+        $count = 1;
         foreach($request->input("brands") as $brand){
             $brandData = [
                 "name"=>parseBrandName($brand["name"])
@@ -212,7 +216,9 @@ class CategoryController extends Controller
                     }
                     $brandModel = Brand::create($brandData);
                 }
-                $category->brands()->attach($brandModel);
+                $category->brands()->attach($brandModel,["order"=>$count]);
+            } else {
+                $category->brands()->updateExistingPivot($category->brands->where("name",$brandData["name"])->first(),["order"=>$count]);
             }
         }
 
