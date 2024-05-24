@@ -220,6 +220,7 @@ class CategoryController extends Controller
             } else {
                 $category->brands()->updateExistingPivot($category->brands->where("name",$brandData["name"])->first(),["order"=>$count]);
             }
+            $count++;
         }
 
         return 

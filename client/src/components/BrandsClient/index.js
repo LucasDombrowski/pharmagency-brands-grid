@@ -62,7 +62,7 @@ export default function BrandsClient(props){
                     "client_id":client.id,
                     "client_token":client.token,
                     "name":singleCategory.name,
-                    "brands":singleCategory.brands.map((v)=>{
+                    "brands":[...singleCategory.brands].map((v)=>{
                         return {
                             "name":v.name,
                             "url": (v.png_url ? v.png_url : v.jpg_url).replace(new RegExp(" ","g"), "%20")
@@ -134,31 +134,31 @@ export default function BrandsClient(props){
                             deleteBrand = {(brand)=>{
                                 const updatedCategory = {
                                     ...category,
-                                    brands: category.brands.filter((v)=>{
+                                    "brands": [...category.brands].filter((v)=>{
                                         return v.id !== brand.id
                                     })
                                 };
                                 setCategory(updatedCategory);
-                                setCategories(categories.map((v)=>{
+                                setCategories([...categories].map((v)=>{
                                     if(v.id === updatedCategory.id){
                                         return updatedCategory
                                     } else {
                                         return v
                                     }
                                 }));
-
                             }}
                             deleteCategory = {handleDelete}
                             addCategory = {(name)=>{
                                 if(uniqueCategory(name)){
-                                    const updatedCategories = [{
+                                    const newCategory = {
                                         "id":getNewCategoryId(),
                                         "name":name,
                                         "brands":[],
                                         "new":true
-                                    }, ...categories];
+                                    }
+                                    const updatedCategories = [...categories,newCategory];
                                     setCategories(updatedCategories);
-                                    setCategory(updatedCategories[0]);
+                                    setCategory(newCategory);
                                 }
                             }}
                             setCategories={setCategories}/>
@@ -169,12 +169,18 @@ export default function BrandsClient(props){
                     </div>
                     <div className="min-w-[33%] w-[33%] border-l-4 border-l-black px-6 py-10 ml-10 h-full overflow-scroll">
                         <BrandsGrid
-                        addBrand = {(brand)=>{
+                        addBrand = {(brand, index = null)=>{
                             console.log(categories);
                             if(uniqueBrand(brand)){
+                                const updatedBrands = [...category.brands];
+                                if(index){
+                                    updatedBrands.splice(index,0,brand);
+                                } else {
+                                    updatedBrands.push(brand);
+                                }
                                 const updatedCategory = {
                                     ...category,
-                                    brands: [...category.brands, brand]
+                                    "brands":updatedBrands
                                 };
                                 setCategory(updatedCategory);
                                 setCategories([...categories].map((v)=>{
@@ -184,6 +190,8 @@ export default function BrandsClient(props){
                                         return v;
                                     }
                                 }));
+                            } else {
+                                setCategory(category);
                             }
                         }}/>
                     </div>

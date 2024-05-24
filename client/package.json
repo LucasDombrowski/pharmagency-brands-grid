@@ -43,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "@types/sortablejs": "^1.15.8",
     "tailwindcss": "^3.4.3"
   }
 }
