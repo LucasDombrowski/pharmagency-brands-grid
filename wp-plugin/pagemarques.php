@@ -13,5 +13,5 @@ function pagemarques_path(string $path){
 }
 
 include_once pagemarques_path("/includes/admin/pages.php");
-include_once pagemarques_path("/includes/shortcodes/shorcodes.php");
+include_once pagemarques_path("/includes/shortcodes/shortcodes.php");
 
