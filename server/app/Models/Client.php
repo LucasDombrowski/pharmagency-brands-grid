@@ -13,6 +13,6 @@ class Client extends Model
     protected $fillable = ["name","token","domain"];
     
     public function categories(){
-        return $this->hasMany(Category::class,"client_id");
+        return $this->hasMany(Category::class,"client_id")->orderBy("name","ASC");
     }
 }

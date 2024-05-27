@@ -14,8 +14,11 @@ export default function CategorySelector(props){
             addCategory={props.addCategory}
             category={props.category}/>
             <CategoryBrands
-            brands={props.category.brands}
-            deleteBrand={props.deleteBrand}/>
+            deleteBrand={props.deleteBrand}
+            setCategory={props.setCategory}
+            category={props.category}
+            categories={props.categories}
+            setCategories={props.setCategories}/>
         </div>
     )
 }
