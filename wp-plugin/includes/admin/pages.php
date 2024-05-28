@@ -56,7 +56,7 @@ function pagemarques_settings_page_register() {
         'Catégorisation',          // Title
         function(){
             pagemarques_settings_page_checkbox_render("pagemarques_categories",false,"Afficher les catégories");  ?>
-            <div>
+            <div class="pagemarques-hidden" id="pagemarques-main-colors">
                 <?=pagemarques_settings_page_color_render("pagemarques_primaryColor","Couleur principale","#000000");?>
                 <?=pagemarques_settings_page_color_render("pagemarques_secondaryColor","Couleur secondaire","#FFFFFF");?>
             </div>
@@ -91,6 +91,27 @@ function pagemarques_settings_page_register() {
     );
 
     add_settings_field(
+        'pagemarques_cssClasses',            // Field ID
+        'Classes css additionnelles',          // Title
+        function(){
+            $key = "pagemarques_cssClasses";
+            ?>
+            <div class="pagemarques-class-input">
+                <?=pagemarques_settings_page_text_field_render($key,null,"Conteneur global (grid)",false,"grid_container")?>
+            </div>
+            <div class="pagemarques-class-input">
+                <?=pagemarques_settings_page_text_field_render($key,null,"Conteneur image",false,"image_container")?>
+            </div>
+            <div class="pagemarques-class-input">
+                <?=pagemarques_settings_page_text_field_render($key,null,"Image",false,"image")?>
+            </div>
+            <?php
+        },
+        'page-marques',                   // Page slug
+        'pagemarques_general'             // Section ID
+    );
+
+    add_settings_field(
         'pagemarques_loading',            // Field ID
         'Chargement',          // Title
         function(){
@@ -105,7 +126,7 @@ function pagemarques_settings_page_register() {
                     "value"=>"pagination",
                 ]
             ]); ?>
-            <div>
+            <div class="pagemarques-number-label-input pagemarques-hidden" id="pagemarques-pagination-limit-input">
                 <label for="<?=pagemarques_generate_input_name("pagemarques_paginationLimit");?>">Nombre de marques par page</label>
                 <?=pagemarques_settings_page_number_field_render("pagemarques_paginationLimit", 15, 5);?>
             </div>
@@ -120,15 +141,23 @@ add_action('admin_init', 'pagemarques_settings_page_register');
 function pagemarques_settings_page_color_render(string $key, string $label, string $default = null){
     $option = pagemarques_settings_page_get_option($key);
     ?>
-    <input type="color" required name="<?=pagemarques_generate_input_name($key)?>" id="<?=pagemarques_generate_input_name($key)?>" value="<?=esc_attr($option ? $option : $default);?>"/>
-    <label for="<?=pagemarques_generate_input_name($key)?>"><?=$label;?></label>
+    <div class="pagemarques-color-input">
+        <input type="color" required name="<?=pagemarques_generate_input_name($key)?>" id="<?=pagemarques_generate_input_name($key)?>" value="<?=esc_attr($option ? $option : $default);?>"/>
+        <label for="<?=pagemarques_generate_input_name($key)?>"><?=$label;?></label>
+    </div>
     <?php
 }
 
-function pagemarques_settings_page_text_field_render(string $key, string $default = null){
-    $option = pagemarques_settings_page_get_option($key);
-    ?>
-    <input type="text" name="<?=pagemarques_generate_input_name($key)?>" value="<?= esc_attr($option ? $option : $default) ?>" required />
+function pagemarques_settings_page_text_field_render(string $key, string $default = null, string $label = null, bool $required = true, string $subKey = null){
+    $option = pagemarques_settings_page_get_option($key,$subKey);
+    $inputName = pagemarques_generate_input_name($key);
+    if(isset($subKey)){
+        $inputName = $inputName."[".$subKey."]";
+    }
+    if(isset($label)): ?>
+    <label for="<?=$inputName?>"><?=$label?></label>
+    <?php endif; ?>
+    <input type="text" id="<?=$inputName?>" name="<?=$inputName?>" value="<?= esc_attr($option ? $option : $default) ?>" <?=$required ? "required" : ""?>/>
     <?php
 }
 
@@ -153,7 +182,7 @@ function pagemarques_generate_input_name(string $key){
 function pagemarques_settings_page_select_render(string $key, array $options){
     $option = pagemarques_settings_page_get_option($key);
     ?>
-    <select name="pagemarques_settings[<?= esc_attr($key) ?>]" required>
+    <select name="<?=pagemarques_generate_input_name($key)?>" id="<?=pagemarques_generate_input_name($key)?>" required>
         <?php
         foreach($options as $selectOption):?>
             <option value="<?=$selectOption["value"]?>" <?=(($option !== null && $selectOption["value"] === $option) || $option===null && isset($selectOption["default"])) ? "selected" : ""?>>
@@ -166,21 +195,30 @@ function pagemarques_settings_page_select_render(string $key, array $options){
 
 function pagemarques_settings_page_fieldset_render(string $key, string $legend, array $options){
     $option = pagemarques_settings_page_get_option($key);
+    $inputName = pagemarques_generate_input_name($key);
     ?>
-    <fieldset>
+    <fieldset class="pagemarques-fieldset">
         <legend><?=$legend?></legend>
-        <?php
-        foreach($options as $fieldsetOption): ?>
-            <input type="radio" id="<?=$fieldsetOption["value"]?>" value="<?=$fieldsetOption["value"]?>" name="<?=pagemarques_generate_input_name($key)?>" <?=(($option !== null && $fieldsetOption["value"] === $option) || $option===null && isset($fieldsetOption["default"])) ? "checked" : ""?>/>
-            <label for="<?=$fieldsetOption["value"]?>"><?=$fieldsetOption["label"]?></label>
-        <?php endforeach;?>
+        <div class="pagemarques-radio-inputs-container">
+            <?php
+            foreach($options as $fieldsetOption): ?>
+                <div class="pagemarques-radio-input">
+                    <input type="radio" id="<?=$inputName."-".$fieldsetOption["value"]?>" value="<?=$fieldsetOption["value"]?>" name="<?=pagemarques_generate_input_name($key)?>" <?=(($option !== null && $fieldsetOption["value"] === $option) || $option===null && isset($fieldsetOption["default"])) ? "checked" : ""?>/>
+                    <label for="<?=$inputName."-".$fieldsetOption["value"]?>"><?=$fieldsetOption["label"]?></label>
+                </div>
+            <?php endforeach;?>
+        </div>
     </fieldset>
     <?php
 }
 
-function pagemarques_settings_page_get_option(string $key){
+function pagemarques_settings_page_get_option(string $key, string $subKey = null){
     $options = get_option('pagemarques_settings');
-    $option = isset($options[$key]) ? $options[$key] : null;
+    if(isset($subKey)){
+        $option = isset($options[$key][$subKey]) ? $options[$key][$subKey] : null;
+    } else {
+        $option = isset($options[$key]) ? $options[$key] : null;
+    }
     return $option;
 }
 
@@ -193,6 +231,7 @@ function pagemarques_settings_page_number_field_render(string $key, int $default
 
 function pagemarques_settings_sanitize($input) {
     $sanitized_input = array();
+    error_log(print_r($input,true));
     if(isset($input['pagemarques_domain'])) {
         $sanitized_input['pagemarques_domain'] = sanitize_text_field($input['pagemarques_domain']);
     }
@@ -218,11 +257,34 @@ function pagemarques_settings_sanitize($input) {
         $parsedInteger = absint($input['pagemarques_paginationLimit']);
         $sanitized_input['pagemarques_paginationLimit'] = ($parsedInteger >= 5) ? $parsedInteger : 15;
     }
+    if(isset($input["pagemarques_cssClasses"])){
+        $cssClasses = $input["pagemarques_cssClasses"];
+        $sanitizedCssClasses = [];
+        if(isset($cssClasses["grid_container"])){
+            $sanitizedCssClasses["grid_container"] = sanitize_text_field( $cssClasses["grid_container"] );
+        }
+        if(isset($cssClasses["image_container"])){
+            $sanitizedCssClasses["image_container"] = sanitize_text_field($cssClasses["image_container"]);
+        }
+        if(isset($cssClasses["image"])){
+            $sanitizedCssClasses["image"] = sanitize_text_field($cssClasses["image"]);
+        }
+        if(!empty($sanitizedCssClasses)){
+            $sanitized_input["pagemarques_cssClasses"] = $sanitizedCssClasses;
+        }
+    }
     return $sanitized_input;
 }
 
-add_action('admin_menu', 'pagemarques_generate_admin_pages');
+function pagemarques_settings_page_enqueue_assets(){
+    $assetsFolder = plugin_dir_url(__FILE__) . '../../assets';
+    wp_enqueue_style("pagemarques_admin_css",$assetsFolder."/css/admin-page.css");
+    wp_enqueue_script("pagemarques_admin_js",$assetsFolder."/js/admin-page.js");
+    wp_enqueue_script("pagemarques_grid_live_update",$assetsFolder."/js/grid-live-update.js");
+}
 
+add_action('admin_menu', 'pagemarques_generate_admin_pages');
+add_action("admin_enqueue_scripts","pagemarques_settings_page_enqueue_assets");
 ?>
 
 

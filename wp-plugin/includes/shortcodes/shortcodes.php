@@ -19,7 +19,8 @@ function pagemarques_enqueue_react_script() {
         "secondaryColor"=>isset($options["pagemarques_secondaryColor"]) ? $options["pagemarques_secondaryColor"] : "#FFFFFF",
         "imageSize"=>isset($options["pagemarques_imageSize"]) ? $options["pagemarques_imageSize"] : 300,
         "loading"=>isset($options["pagemarques_loading"]) ? $options["pagemarques_loading"] : "lazy_loading",
-        "paginationLimit"=>isset($options["pagemarques_paginationLimit"]) ? $options["pagemarques_paginationLimit"] : 15
+        "paginationLimit"=>isset($options["pagemarques_paginationLimit"]) ? $options["pagemarques_paginationLimit"] : 15,
+        "cssClasses"=>isset($options["pagemarques_cssClasses"]) ? $options["pagemarques_cssClasses"] : []
     ];
     $data = pagemarques_get_domain_data($params["domain"]);
     pagemarques_init_react_script([

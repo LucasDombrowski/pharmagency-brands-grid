@@ -5,7 +5,8 @@ export default function CategoryBrandsPaginationButton(props){
         <button type="button" class={
             clsx(
                 "relative inline-flex items-center px-4 py-1 border text-sm font-medium",
-                props.locked ? "opacity-50" : "cursor-pointer"
+                props.locked ? "opacity-50" : "cursor-pointer",
+                "pagemarques-pagination-button"
             )
         } onClick={props.onClick}
         style={

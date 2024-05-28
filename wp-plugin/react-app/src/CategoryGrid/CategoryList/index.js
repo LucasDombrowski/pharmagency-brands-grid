@@ -1,5 +1,6 @@
 import { useMediaQuery } from "react-responsive";
 import CategoryListItem from "./CategoryListItem";
+import clsx from "clsx";
 
 export default function CategoryList(props){
     const params = props.params;
@@ -12,13 +13,17 @@ export default function CategoryList(props){
     }
 
     return (
-        <div className="w-full mb-6">
+        <div className={clsx(
+            "w-full mb-8",
+            !props.params.displayCategories && "hidden"
+        )} id="pagemarques-category-list">
             {isMobile ? 
             <div className="w-full flex justify-center items-center">
-                <select onChange={handleChange} className="min-w-[200px] text-center" style={
+                <select id="pagemarques-category-select" onChange={handleChange} className="min-w-[200px] text-center border" style={
                     {
                         "background":params.secondaryColor,
-                        "color":params.primaryColor
+                        "color":params.primaryColor,
+                        "borderColor":params.primaryColor
                     }
                 }>
                     {categories.map(
