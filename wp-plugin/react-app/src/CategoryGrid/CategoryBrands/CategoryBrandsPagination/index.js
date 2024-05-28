@@ -1,7 +1,6 @@
 import CategoryBrandsPaginationButton from "./CategoryBrandsPaginationButton";
 
 export default function CategoryBrandsPagination(props) {
-    console.log(props);
     return (
         <div class="flex justify-center mt-4">
             <nav class="flex" aria-label="Pagination">
@@ -17,7 +16,8 @@ export default function CategoryBrandsPagination(props) {
                         "color":props.primaryColor,
                         "borderColor":props.primaryColor
                     }
-                }>
+                }
+                id="pagemarques-pagination-index">
                     {props.page}
                 </span>
                 <CategoryBrandsPaginationButton label="Suivant" onClick={()=>{
