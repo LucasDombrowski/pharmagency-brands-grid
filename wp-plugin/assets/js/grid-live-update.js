@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     gridColumnInput.addEventListener("change", (e) => {
         pagemarquesChangeGridColumn(e.target.value);
+        pagemarquesChangeImagesSize(e.target.value, imageSizeInput.value)
     });
 
     imageSizeInput.addEventListener("change", (e) => {

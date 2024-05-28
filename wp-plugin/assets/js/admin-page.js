@@ -1,9 +1,11 @@
 function pagemarquesDisplayElement(el) {
     el.classList.remove("pagemarques-hidden");
+    el.classList.remove("hidden");
 }
 
 function pagemarquesHideElement(el) {
     el.classList.add("pagemarques-hidden");
+    el.classList.add("hidden");
 }
 
 function pagemarquesCheckAction(event, onCheck, onUncheck) {
@@ -15,11 +17,14 @@ function pagemarquesCheckAction(event, onCheck, onUncheck) {
 }
 
 function pagemarquesCategoryCheckAction(e) {
-    const el = document.getElementById("pagemarques-main-colors");
+    const colors = document.getElementById("pagemarques-main-colors");
+    const categories = document.getElementById("pagemarques-category-list");
     pagemarquesCheckAction(e, () => {
-        pagemarquesDisplayElement(el);
+        pagemarquesDisplayElement(colors);
+        pagemarquesDisplayElement(categories);
     }, () => {
-        pagemarquesHideElement(el);
+        pagemarquesHideElement(colors);
+        pagemarquesHideElement(categories);
     });
 }
 
