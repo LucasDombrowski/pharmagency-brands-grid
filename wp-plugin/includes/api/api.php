@@ -4,8 +4,14 @@ require_once pagemarques_path("/includes/helpers/server.php");
 
 function pagemarques_get_domain_data(string $domain){
     $data = pagemarques_get_request_data("/clients/domain/".$domain);
-    $data->all_brands = pagemarques_get_all_client_brands($data->id);
-    return $data;
+    if(isset($data->exception)){
+        return [
+            "exception"=>$data->exception
+        ];
+    } else  {
+        $data->all_brands = pagemarques_get_all_client_brands($data->id);
+        return $data;
+    }
 }
 
 function pagemarques_get_request_data(string $request){
