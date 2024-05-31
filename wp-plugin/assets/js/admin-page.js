@@ -1,3 +1,4 @@
+
 function pagemarquesDisplayElement(el) {
     el.classList.remove("pagemarques-hidden");
     el.classList.remove("hidden");
@@ -28,7 +29,20 @@ function pagemarquesCategoryCheckAction(e) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function pagemarquesResetGrid(){
+    const grid = document.getElementById("pagemarques-grid");
+}
+
+function getAllGridItems(){
+    const res = [];
+    const items = document.querySelectorAll(".pagemarques-grid-item");
+    for(let item of items){
+        res.push(item.cloneNode(true));
+    }
+    return res;
+}
+
+window.addEventListener('load', () => {
     const categoryInput = document.getElementById("pagemarques_settings[pagemarques_categories]");
     const paginationInputs = document.querySelectorAll("input[name='pagemarques_settings[pagemarques_loading]']");
 

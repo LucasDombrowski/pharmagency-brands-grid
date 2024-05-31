@@ -3,7 +3,13 @@ import CategoryList from "./CategoryList";
 import CategoryBrands from "./CategoryBrands";
 
 export default function CategoryGrid(props){
-    const categories = props.data.categories;
+    const categories = [
+        {
+            "name":"Toutes",
+            "brands":props.data.all_brands
+        },
+        ...props.data.categories
+    ];
     const [category,setCategory] = useState(categories[0]);
     return (
         <div className="w-full">

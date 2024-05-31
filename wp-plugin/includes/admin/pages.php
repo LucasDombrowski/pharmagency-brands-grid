@@ -44,8 +44,19 @@ function pagemarques_settings_page_register() {
     add_settings_field(
         'pagemarques_columns',            // Field ID
         'Colonnes de la grille',          // Title
-        function(){
-            pagemarques_settings_page_number_field_render("pagemarques_columns", 3, 1, 10);
+        function(){?>
+            <div>
+                <div class="pagemarques-class-input">
+                    <?=pagemarques_settings_page_number_field_render("pagemarques_columnsComputer", 3, 1, null, "Ordinateur");?>
+                </div>
+               <div class="pagemarques-class-input">
+                    <?=pagemarques_settings_page_number_field_render("pagemarques_columnsTablet", 2, 1, null,"Tablette");?>
+                </div> 
+                <div class="pagemarques-class-input">
+                    <?=pagemarques_settings_page_number_field_render("pagemarques_columnsMobile", 1, 1, null,"Téléphone");?>
+                </div> 
+            </div>
+        <?php
         }, // Callback
         'page-marques',                   // Page slug
         'pagemarques_general'             // Section ID
@@ -222,9 +233,11 @@ function pagemarques_settings_page_get_option(string $key, string $subKey = null
     return $option;
 }
 
-function pagemarques_settings_page_number_field_render(string $key, int $default = null, int $min = null, int $max = null){
+function pagemarques_settings_page_number_field_render(string $key, int $default = null, int $min = null, int $max = null, string $label = null){
     $option = pagemarques_settings_page_get_option($key);
-    ?>
+    if(isset($label)): ?>
+        <label for="<?=pagemarques_generate_input_name($key)?>"><?=$label?></label>
+        <?php endif; ?>
     <input type="number" name="<?=pagemarques_generate_input_name($key)?>" id="<?=pagemarques_generate_input_name($key)?>" value="<?= esc_attr($option ? $option : $default) ?>" required min="<?= esc_attr($min) ?>" max="<?= esc_attr($max) ?>" />
     <?php
 }
@@ -235,9 +248,17 @@ function pagemarques_settings_sanitize($input) {
     if(isset($input['pagemarques_domain'])) {
         $sanitized_input['pagemarques_domain'] = sanitize_text_field($input['pagemarques_domain']);
     }
-    if(isset($input['pagemarques_columns'])) {
-        $parsedInteger = absint($input['pagemarques_columns']);
-        $sanitized_input['pagemarques_columns'] = ($parsedInteger >= 1) ? $parsedInteger : 3;
+    if(isset($input['pagemarques_columnsComputer'])) {
+        $parsedInteger = absint($input['pagemarques_columnsComputer']);
+        $sanitized_input['pagemarques_columnsComputer'] = ($parsedInteger >= 1) ? $parsedInteger : 3;
+    }
+    if(isset($input['pagemarques_columnsTablet'])) {
+        $parsedInteger = absint($input['pagemarques_columnsTablet']);
+        $sanitized_input['pagemarques_columnsTablet'] = ($parsedInteger >= 1) ? $parsedInteger : 2;
+    }
+    if(isset($input['pagemarques_columnsMobile'])) {
+        $parsedInteger = absint($input['pagemarques_columnsMobile']);
+        $sanitized_input['pagemarques_columnsMobile'] = ($parsedInteger >= 1) ? $parsedInteger : 1;
     }
     $sanitized_input["pagemarques_categories"] = isset($input["pagemarques_categories"]);
     if(isset($input["pagemarques_imageSize"])){

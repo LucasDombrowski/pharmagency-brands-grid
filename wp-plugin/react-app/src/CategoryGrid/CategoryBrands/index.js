@@ -2,13 +2,32 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import CategoryBrandsItem from "./CategoryBrandsItem";
 import CategoryBrandsPagination from "./CategoryBrandsPagination";
 import clsx from "clsx";
+import { useMediaQuery } from "react-responsive";
 
 export default function CategoryBrands(props) {
+    const isTablet = useMediaQuery({
+        query: '(max-width: 800px)'
+    });
+    const isMobile = useMediaQuery({
+        query: '(max-width: 500px)'
+    });
     const [page, setPage] = useState(1);
     const [brands, setBrands] = useState([]);
     const [count, updateCount] = useState(10);
     const observer = useRef(null);
     const brandsContainer = useRef(null);
+    const [columns, setColumns] = useState(getResponsiveColumns());
+
+    function getResponsiveColumns(){
+        if(isMobile){
+            return props.columns.mobile
+        } else if(isTablet){
+            return props.columns.tablet
+        } else {
+            return props.columns.computer
+        }
+    }
+    
 
     function getCurrentPage() {
         const allBrands = props.brands;
@@ -66,10 +85,15 @@ export default function CategoryBrands(props) {
     }, [props.brands]);
 
     useEffect(() => {
+        window.dispatchEvent(new Event("pagemarques_grid_loaded"));
         return () => {
             if (observer.current) observer.current.disconnect();
         };
     }, []);
+
+    useEffect(()=>{
+        setColumns(getResponsiveColumns());
+    },[isMobile, isTablet]);
 
     return (
         <>
@@ -77,7 +101,7 @@ export default function CategoryBrands(props) {
                 "w-full grid gap-4 mx-auto",
                 props.cssClasses.grid_container
             )} ref={brandsContainer} style={{
-                gridTemplateColumns: `repeat(${props.columns}, 1fr)`,
+                gridTemplateColumns: `repeat(${columns}, 1fr)`,
                 maxWidth: `${props.columns * props.imageSize}px`
             }}
             id="pagemarques-grid">

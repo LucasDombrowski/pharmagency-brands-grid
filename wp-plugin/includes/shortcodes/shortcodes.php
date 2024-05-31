@@ -13,7 +13,11 @@ function pagemarques_enqueue_react_script() {
     $options = get_option("pagemarques_settings");
     $params = [
         "domain" => isset($options["pagemarques_domain"]) ? $options["pagemarques_domain"] : pagemarques_get_domain(),
-        "columns" => isset($options["pagemarques_columns"]) ? $options["pagemarques_columns"] : 3,
+        "columns" => [
+            "computer"=>isset($options["pagemarques_columnsComputer"]) ? $options["pagemarques_columnsComputer"] : 3,
+            "tablet"=>isset($options["pagemarques_columnsTablet"]) ? $options["pagemarques_columnsTablet"] : 2,
+            "mobile"=>isset($options["pagemarques_columnsMobile"]) ? $options["pagemarques_columnsMobile"] : 1
+        ],
         "displayCategories" => isset($options["pagemarques_categories"]) ? $options["pagemarques_categories"] : false,
         "primaryColor" => isset($options["pagemarques_primaryColor"]) ? $options["pagemarques_primaryColor"] : "#000000",
         "secondaryColor"=>isset($options["pagemarques_secondaryColor"]) ? $options["pagemarques_secondaryColor"] : "#FFFFFF",
