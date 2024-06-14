@@ -102,7 +102,7 @@ export default function CategoryBrands(props) {
                 props.cssClasses.grid_container
             )} ref={brandsContainer} style={{
                 gridTemplateColumns: `repeat(${columns}, 1fr)`,
-                maxWidth: `${props.columns * props.imageSize}px`,
+                maxWidth: `${columns * props.imageSize}px`,
                 gap: props.gridGap
             }}
             id="pagemarques-grid">

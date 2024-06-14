@@ -1,9 +1,0 @@
-.pagemarques_grid_container{
-    display: grid;
-}
-
-.pagemarques_grid_item_image{
-    aspect-ratio: 1/1;
-    object-fit: contain;
-    width: 100%;
-}

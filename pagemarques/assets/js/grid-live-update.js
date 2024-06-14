@@ -132,8 +132,9 @@ window.addEventListener("load", () => {
 
     function pagemarquesSetDefaultClasses(){
         for(let entry of Object.entries(classInputs)){
-            console.log(entry[1]["query"]);
-            classInputs[entry[0]]["default"] = pagemarquesGetDefaultClass(entry[1]["query"][0], entry[1]["input"].value)
+            if(entry[1]["query"][0] && entry[1]["query"][0] != undefined){
+                classInputs[entry[0]]["default"] = pagemarquesGetDefaultClass(entry[1]["query"][0], entry[1]["input"].value)
+            }
         }
     }
 
@@ -176,10 +177,11 @@ window.addEventListener("load", () => {
 
     window.addEventListener("resize",()=>{
         pagemarquesChangeGridColumn(pagemarquesGetResponsiveGridColumns());
+        pagemarquesChangeImagesSize(pagemarquesGetResponsiveGridColumns(),imageSizeInput.value);
     });
 
     imageSizeInput.addEventListener("change", (e) => {
-        pagemarquesChangeImagesSize(gridColumnInput.value, e.target.value);
+        pagemarquesChangeImagesSize(pagemarquesGetResponsiveGridColumns(), e.target.value);
     });
 
     primaryColorInput.addEventListener("change", pagemarquesColorInputChangeEvent);

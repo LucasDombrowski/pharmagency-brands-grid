@@ -1,5 +1,4 @@
 <?php
-
 require_once pagemarques_path("/includes/helpers/server.php");
 
 function pagemarques_generate_admin_pages() {
@@ -338,6 +337,6 @@ function pagemarques_settings_page_enqueue_assets(){
 
 add_action('admin_menu', 'pagemarques_generate_admin_pages');
 add_action("admin_enqueue_scripts","pagemarques_settings_page_enqueue_assets");
-?>
+
 
 

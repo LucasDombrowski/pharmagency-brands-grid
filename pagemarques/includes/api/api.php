@@ -25,6 +25,6 @@ function pagemarques_get_request_data(string $request){
 }
 
 function pagemarques_get_all_client_brands(int $id){
-    return pagemarques_get_request_data("/clients/".$id."/brands");
+    return pagemarques_get_request_data("/clients/$id/brands");
 }
 
