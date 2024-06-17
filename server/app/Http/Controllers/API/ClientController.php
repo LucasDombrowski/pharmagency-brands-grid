@@ -23,12 +23,24 @@ class ClientController extends Controller
     }
     /**
      * Display all clients.
+     * 
+     * ## Example
+     * ```
+     * http://localhost:8000/api/clients?query="Lorem Ipsum"&limit=10
+     * ``
      */
     public function index(Request $request)
     {
         $request->validate([
             "query"=>"nullable|string",
-            "limit"=>"nullable|integer"
+            /**
+             * Paginate the results according to this value.
+             */
+            "limit"=>"nullable|integer",
+            /**
+             * The current pagination page.
+             */
+            "page"=>"nullable|integer"
         ]); 
 
         $query = Client::query();
@@ -37,22 +49,21 @@ class ClientController extends Controller
             $query = $query->where("name","like",$request->input("query")."%");
         }
 
-        if($request->filled("limit")){
-            $query = $query->take($request->input("limit"));
-        }
-
         $query = $query->orderBy("created_at","desc");
 
         if(!Auth::guard("sanctum")->check()){
             $query = $query->select(["id","name","domain","created_at","departmentCode"]);
         } 
 
+        $results = $query->paginate($request->input("limit", 10));
+
         return 
         /**
          * Returns all clients in the database. Their tokens will be revealed if you are authenticated.
-         * @body array{array{id: int, name: string, domain: string, departmentCode: int, token: string|null}}
+         *  * The results are paginated by the "limit" input. If it is not set, the pagination limit is set to a default value which is 10.
+         * @body array{current_page: integer, data: array{id: int, name: string, domain: string, departmentCode: int, token: string|null}, first_page_url: string, from: integer, last_page: integer, last_page_url: string, links: array{array{url: string|null, label:string,active:bool}},next_page_url: string, path: string, per_page: integer, prev_page_url: string|null, to: integer, total: integer}
          */
-        response()->json($query->get());
+        response()->json($results);
     }
 
     /**

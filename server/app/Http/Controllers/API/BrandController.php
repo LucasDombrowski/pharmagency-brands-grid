@@ -44,13 +44,17 @@ class BrandController extends Controller
              */
             "validated" => "nullable|boolean",
             /**
-             * Limit the results to a specific amount.
+             * Paginate the results according to this value.
              */
             "limit" => "nullable|integer",
             /**
              * Sort the results by a specific client department code.
              */
-            "code" => "nullable|integer|digits:2"
+            "code" => "nullable|integer|digits:2",
+            /**
+             * The current pagination page.
+             */
+            "page"=>"nullable|integer"
         ]);
 
         $query = Brand::query();
@@ -68,6 +72,10 @@ class BrandController extends Controller
             $query->take($request->input("limit"));
         }
 
+        if ($request->filled("offset")) {
+            $query->skip($request->input("offset"));
+        }
+
         if ($request->filled("code")) {
             $code = $request->input("code");
             $query->withCount([
@@ -81,11 +89,12 @@ class BrandController extends Controller
             $query->withCount("categories")->orderBy("categories_count", "desc");
         }
 
-        $results = $query->get();
+        $results = $query->paginate($request->input("limit", 10)); // Default limit of 10 per page
 
         /**
          * Returns the results sorted by their occurences in the clients categories. If the "code" field is set, the occurences will be only determined with the clients that have the same given department code.
-         * @body array{array{id:int, name:string, png_url:string|null,jpg_url:string|null,validated: true}}
+         * The results are paginated by the "limit" input. If it is not set, the pagination limit is set to a default value which is 10.
+         * @body array{current_page: integer, data: array{id:int, name:string, png_url:string|null,jpg_url:string|null,validated: true}, first_page_url: string, from: integer, last_page: integer, last_page_url: string, links: array{array{url: string|null, label:string,active:bool}},next_page_url: string, path: string, per_page: integer, prev_page_url: string|null, to: integer, total: integer}
          */
         return response()->json($results);
     }
