@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Client extends Model
 {
     use HasFactory;
-    public $timestamps = false;
-
-    protected $fillable = ["name","token","domain"];
+    protected $fillable = ["name","token","domain","departmentCode","created_at"];
     
     public function categories(){
         return $this->hasMany(Category::class,"client_id")->orderBy("name","ASC");

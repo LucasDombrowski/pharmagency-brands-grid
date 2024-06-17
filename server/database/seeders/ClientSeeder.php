@@ -18,9 +18,11 @@ class ClientSeeder extends Seeder
             $first = fgetcsv($open, null, ",");
             while (($data = fgetcsv($open, null, ";")) !== false) {
                 Client::create([
-                    "name"=>$data[2],
-                    "domain"=>$data[3],
-                    "token"=>(new Token())->Unique('clients', 'token', 16)
+                    "name"=>$data[0],
+                    "domain"=>$data[1],
+                    "departmentCode"=>intval(substr(strval($data[2]),0,2)),
+                    "token"=>(new Token())->Unique('clients', 'token', 16),
+                    "created_at"=>$data[3]
                 ]);
             }
             fclose($open);

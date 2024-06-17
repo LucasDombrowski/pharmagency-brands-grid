@@ -15,7 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->string("domain");
+            $table->integer("departmentCode");
             $table->string("token")->unique();
+            $table->timestamps();
         });
     }
 

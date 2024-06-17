@@ -41,14 +41,16 @@ class ClientController extends Controller
             $query = $query->take($request->input("limit"));
         }
 
+        $query = $query->orderBy("created_at","desc");
+
         if(!Auth::guard("sanctum")->check()){
-            $query = $query->select(["id","name","domain"]);
+            $query = $query->select(["id","name","domain","created_at","departmentCode"]);
         } 
 
         return 
         /**
          * Returns all clients in the database. Their tokens will be revealed if you are authenticated.
-         * @body array{array{id: int, name: string, domain: string, token: string|null}}
+         * @body array{array{id: int, name: string, domain: string, departmentCode: int, token: string|null}}
          */
         response()->json($query->get());
     }
@@ -63,19 +65,22 @@ class ClientController extends Controller
         $request->validate([
             //The client name
             "name"=>"required|string",
-            "domain"=>["required","string",new FQDN]
+            "domain"=>["required","string",new FQDN],
+            //The french department code where the client is located at
+            "departmentCode"=>"required|integer|digits:2"
         ]);
 
         $client = Client::create([
             "name"=>$request->input("name"),
             "domain"=>$request->input("domain"),
-            "token"=> (new Token())->Unique('clients', 'token', 16)
+            "token"=> (new Token())->Unique('clients', 'token', 16),
+            "departmentCode"=>$request->input("departmentCode")
         ]);
 
         return
         /**
          * Returns the created client with his unique token.
-         * @body array{id: int, name:string, domain: string, token: string}
+         * @body array{id: int, name:string, domain: string, departmentCode: int, token: string}
          */ 
         response()->json($client,201);
 
@@ -92,7 +97,7 @@ class ClientController extends Controller
         return
         /**
          * Returns the client which has the given id in the database, with his categories and their brands. His token will be displayed if you are authenticated.
-         * @body array{id: int, name: string, domain: string, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
+         * @body array{id: int, name: string, domain: string, departmentCode: int, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
          */
         response()->json($client->load("categories","categories.brands"));
     }
@@ -106,7 +111,7 @@ class ClientController extends Controller
 
          /**
          * Returns the client which has the given token in the database, with his categories and their brands.
-         * @body array{id: int, name: string, domain: string, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
+         * @body array{id: int, name: string, domain: string, departmentCode: int, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
          */
 
         response()->json(Client::where("token",$token)->firstOrFail()->load("categories","categories.brands"));
@@ -124,7 +129,7 @@ class ClientController extends Controller
         return 
         /**
          * Returns the client which has the given domain in the database, with his categories and their brands. His token will be displayed if you are authenticated.
-         * @body array{id: int, name: string, domain: string, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
+         * @body array{id: int, name: string, domain: string, departmentCode: int, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
          */
         response()->json($client->load("categories","categories.brands"));
 
@@ -156,6 +161,8 @@ class ClientController extends Controller
             //The client name
             "name"=>"required|string",
             "domain"=>["required","string",new FQDN],
+            //The french department code where the client is located at
+            "departmentCode"=>"required|integer|digits:2",
             //A forbidden input, do not include it in the request body
             "token"=>"prohibited"
         ]);
@@ -165,7 +172,7 @@ class ClientController extends Controller
         return
         /**
          * Returns the updated client.
-         * @body array{id: int, domain: string, name:string, token: string}
+         * @body array{id: int, domain: string, name:string, departmentCode: int, token: string}
          */ 
         response()->json($client);
     }
