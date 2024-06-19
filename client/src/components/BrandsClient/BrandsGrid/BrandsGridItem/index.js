@@ -6,7 +6,7 @@ export default function BrandsGridItem(props){
             "border-4 border-black",
             props.className
         )} data-id={props.id}>
-            <img src={props.png_url ? props.png_url : props.jpg_url} alt={props.name} className="w-full aspect-square object-cover"/>
+            <img src={props.png_url ? props.png_url : props.jpg_url} alt={props.name} className="w-full aspect-square object-contain"/>
         </div>
     )
 }
