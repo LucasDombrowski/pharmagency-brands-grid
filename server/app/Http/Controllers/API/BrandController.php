@@ -25,7 +25,7 @@ class BrandController extends Controller
      * 
      * ## Example
      * ```
-     * http://localhost:8000/api/brands?query="Lorem Ipsum"&validated=1&limit=10&code=59
+     * https://data.catalogues-pharmagency.fr/api/brands?query="Lorem Ipsum"&validated=1&limit=10&code=59&page=2
      * ```
      * @unauthenticated
      */

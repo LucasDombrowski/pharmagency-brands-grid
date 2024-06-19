@@ -26,8 +26,8 @@ class ClientController extends Controller
      * 
      * ## Example
      * ```
-     * http://localhost:8000/api/clients?query="Lorem Ipsum"&limit=10
-     * ``
+     * http://localhost:8000/api/clients?query="Lorem Ipsum"&limit=10&page=2
+     * ```
      */
     public function index(Request $request)
     {

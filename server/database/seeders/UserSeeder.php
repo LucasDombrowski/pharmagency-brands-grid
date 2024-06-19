@@ -16,8 +16,8 @@ class UserSeeder extends Seeder
     {
         User::create([
             "name"=>"admin",
-            "email"=>"admin@admin.com",
-            "password"=>Hash::make("admin")
+            "email"=>"admin@data.catalogues-pharmagency.fr",
+            "password"=>Hash::make("27Jo~s0eN!?7")
         ]);
     }
 }
