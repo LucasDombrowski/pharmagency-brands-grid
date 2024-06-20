@@ -47,13 +47,12 @@ export default function Admin({token}){
 
     return (
         <div className="w-full">
-            <div className="w-full bg-gradient-to-r from-pharmagency-blue to-pharmagency-cyan p-6 sticky top-0 left-0">
-                <div>
-                    <WhiteLogo className={"max-w-[100px]"}/>
+            <div className="w-full bg-gradient-to-r from-pharmagency-blue to-pharmagency-cyan p-6 sticky top-0 left-0 flex items-center">
+                <div className="mr-8">
+                    <WhiteLogo className={"max-w-[100px] phone:max-w-[60px]"}/>
                 </div>
                 <div className={clsx(
-                    containerClass,
-                    "w-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                    "w-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[800px] small-computer:static small-computer:translate-x-0 small-computer:translate-y-0"
                 )}>
                     <TextInput
                     type={"search"}
@@ -63,7 +62,7 @@ export default function Admin({token}){
                 </div>
             </div>
             <div className={clsx(
-                "mt-8 mx-auto",
+                "mt-8 mx-auto px-6",
                 containerClass
             )}>
                 {domains.map(

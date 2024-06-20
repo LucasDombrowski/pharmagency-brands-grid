@@ -18,8 +18,8 @@ export default function DomainBlock({ id, name, domain, token, className, handle
 
     return (
         <div className="w-full py-6 border-b border-pharmagency-light-grey">
-            <div className="flex items-center justify-between">
-                <div className="flex flex-col">
+            <div className="flex items-center justify-between phone:flex-col">
+                <div className="flex flex-col phone:items-center phone:text-center phone:mb-8">
                     <span className="font-medium text-20">{name}</span>
                     <span className="font-light text-pharmagency-blue">{domain}</span>
                 </div>

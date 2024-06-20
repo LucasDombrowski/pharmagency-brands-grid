@@ -9,6 +9,9 @@ import TextInput from "../../forms/inputs/TextInput";
 import Brands from "./Brands";
 import CategoriesList from "./CategoriesList";
 import CategoryBrands from "./CategoryBrands";
+import Button from "../../Button";
+import { colors } from "../../../settings";
+import { Circles } from "react-loader-spinner";
 
 export default function Manager({ userToken }) {
     const { token } = useParams();
@@ -20,6 +23,8 @@ export default function Manager({ userToken }) {
     const [useCategories, setUseCategories] = useState(false);
     const [options, setOptions] = useState([]);
     const [category, setCategory] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [edits, setEdits] = useState(null);
 
     async function getClient() {
         try {
@@ -90,7 +95,36 @@ export default function Manager({ userToken }) {
         }
     }
 
+    function resetCategories() {
+        // eslint-disable-next-line no-restricted-globals
+        const isConfirmed = confirm("Attention ! Cette action placera vos marques dans une seule collection et supprimera vos catégories.");
+        if (isConfirmed) {
+            const updatedCategories = generatePlaceholderCategory();
+            updatedCategories[0].brands = getAllCategoriesBrands();
+            setCategory(updatedCategories[0]);
+            setCategories(updatedCategories);
+        }
+    }
+
+    function getAllCategoriesBrands() {
+        const res = [];
+        [...categories].map(({ brands }) => {
+            return brands;
+        }).forEach((v) => {
+            v.forEach((brand) => {
+                if (!res.some(item => item.id === brand.id)) {
+                    res.push({ ...brand });
+                }
+            })
+        });
+        return res;
+    }
+
     function addCategory(v) {
+        const test = testCategoryName(placeholderCategoryName);
+        if (test) {
+            v.brands = [...test.brands];
+        }
         setCategories([...categories, v]);
         setCategory(v);
     }
@@ -100,7 +134,8 @@ export default function Manager({ userToken }) {
             {
                 id: getNewCategoryId(),
                 name: placeholderCategoryName,
-                brands
+                brands,
+                new: true
             }
         ];
     }
@@ -136,12 +171,82 @@ export default function Manager({ userToken }) {
         }
     };
 
+    function resetManager() {
+        // eslint-disable-next-line no-restricted-globals
+        const isConfirmed = confirm("Annuler toutes les modifications ?");
+        if (isConfirmed) {
+            getClient();
+        }
+    }
+
+    async function save() {
+        setLoading(true);
+        const validCategories = [...categories].filter(({ brands }) => {
+            return brands.length > 0
+        });
+
+        for (let category of validCategories) {
+            const url = `${BASE_URL}/categories${!category.new ? ("/" + category.id + "?_method=PUT") : ""}`;
+            const data = {
+                "client_id": client.id,
+                "client_token": token,
+                "name": category.name,
+                "brands": [...category.brands].map((v) => {
+                    return {
+                        "name": v.name,
+                        "url": (v.png_url ? v.png_url : v.jpg_url).replace(new RegExp(" ", "g"), "%20")
+                    }
+                })
+            }
+            try {
+                await axios.post(url, data, {
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                });
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        const alreadyExistingCategories = [...validCategories].filter((v) => {
+            return !v.new
+        });
+
+        const categoriesToDelete = [...client.categories].filter(({ id }) => {
+            return !alreadyExistingCategories.some(item => item.id === id);
+        })
+
+        for (let category of categoriesToDelete) {
+            const data = {
+                "client_id": client.id,
+                "client_token": token,
+            };
+            try {
+                await axios.post(`${BASE_URL}/categories/${category.id}?_method=DELETE`, data, {
+                    headers: {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                });
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        setLoading(false);
+        getClient();
+
+    }
+
+
     useEffect(() => {
         getClient();
     }, [token]);
 
     useEffect(() => {
         if (client) {
+            setEdits(null);
             if (client.categories.length > 0) {
                 setCategories(client.categories);
                 setCategory(client.categories[0]);
@@ -182,7 +287,7 @@ export default function Manager({ userToken }) {
                 <div className="w-full h-full flex">
                     <div className={clsx(
                         sideContainerClass,
-                        "bg-gradient-to-b from-pharmagency-cyan to-pharmagency-blue rounded-r-3xl text-pharmagency-white"
+                        "bg-gradient-to-b from-pharmagency-cyan to-pharmagency-blue rounded-r-3xl text-pharmagency-white -ml-[290px] hover:-ml-0 transition-all duration-500"
                     )}>
                         <div className="flex flex-col h-full justify-between">
                             <div>
@@ -198,7 +303,7 @@ export default function Manager({ userToken }) {
                                 </div>
                             </div>
                             <div>
-                                <a target="_blank">
+                                <a target="_blank" href="https://www.catalogues-pharmagency.fr/signaler-probleme">
                                     <div className="flex flex-col items-center">
                                         <WhiteLogo className={"max-w-[150px] mb-4"} />
                                         <span className="underline font-medium text-20">Signaler un problème</span>
@@ -220,16 +325,34 @@ export default function Manager({ userToken }) {
                                                 addCategory(v);
                                             }} />
                                     </div>
-                                    <button className="font-light text-pharmagency-blue underline mt-4">Je ne souhaite pas utiliser de catégories</button>
+                                    {!testCategoryName(placeholderCategoryName) && <button className="font-light text-pharmagency-blue underline mt-4" onClick={() => {
+                                        resetCategories();
+                                    }}>Je ne souhaite pas utiliser de catégories</button>}
                                 </div>
-                                <CategoriesList className={"mt-8"} useCategories={useCategories} categories={categories} category={category} setCategory={setCategory} deleteCategory={deleteCategory} />
-                                <div className="mt-8 grow w-full relative overflow-y-scroll pr-8">
+                                <CategoriesList className={"mt-8 border-b border-pharmagency-blue pb-8"} useCategories={useCategories} categories={categories} category={category} setCategory={setCategory} deleteCategory={deleteCategory} />
+                                <div className="pt-8 grow w-full overflow-y-scroll pr-8 relative">
                                     {category && <CategoryBrands setCategory={setCategory} setCategories={setCategories} category={category} categories={categories} className={"w-full min-h-full"} />}
                                     {(!category || category.brands.length === 0) && <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-24 font-medium">Veuillez ajouter vos marques...</h2>}
                                 </div>
                             </div>
-                            <div className="w-full flex justify-center">
-                                <a className="text-20 font-medium underline" href="https://www.pharmagency.fr/" target="_blank ">pharmagency.fr</a>
+                            <div className="w-full flex flex-col pt-8 border-t border-pharmagency-blue">
+                                <div className="flex w-full justify-end">
+                                    {edits && <>
+                                        <Button className={"bg-pharmagency-red text-pharmagency-white border border-pharmagency-red hover:bg-pharmagency-white hover:text-pharmagency-red transition-all"} onClick={() => {
+                                            resetManager();
+                                        }}>Annuler</Button>
+                                    </>}
+                                    <Button className={"text-pharmagency-white bg-pharmagency-cyan transition-all hover:bg-pharmagency-blue ml-4"} onClick={() => {
+                                        save();
+                                    }}>{loading ? <Circles
+                                        width={20}
+                                        height={20}
+                                        color={colors.white} />
+                                        : "Sauvegarder"}</Button>
+                                </div>
+                                <div className="w-full flex justify-center">
+                                    <a className="text-20 font-medium underline" href="https://www.pharmagency.fr/" target="_blank ">pharmagency.fr</a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -240,11 +363,11 @@ export default function Manager({ userToken }) {
                         <div className="h-full flex flex-col">
                             <div className="grow flex flex-col overflow-hidden">
                                 <h2 className="text-24 font-medium">Ajoutez vos marques</h2>
-                                <TextInput type={"search"} value={search} setValue={setSearch} placeholder={"Recherche..."} className={"bg-[#F7F7F7] text-16 my-8"} />
+                                <TextInput type={"search"} value={search} setValue={setSearch} placeholder={"Recherche..."} className={"bg-pharmagency-lighter-grey text-16 my-8"} />
                                 <Brands brands={brands} className={"grow"} addBrand={addBrand} />
                             </div>
                             <div className="w-full flex justify-center mt-8">
-                                <a className="text-20 font-medium underline text-pharmagency-cyan">Une marque manquante ?</a>
+                                <a className="text-20 font-medium underline text-pharmagency-cyan transition-all hover:text-pharmagency-blue" href="https://www.catalogues-pharmagency.fr/marque-manquante" target="_blank">Une marque manquante ?</a>
                             </div>
                         </div>
                     </div>

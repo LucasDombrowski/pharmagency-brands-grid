@@ -4,6 +4,11 @@ module.exports = {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
+    screens : {
+      "phone":{"max":"500px"},
+      "tablet":{"max":"800px"},
+      "small-computer":{"max":"1250px"},
+    },
     fontSize: {
       "50":"3.125rem",
       "20":"1.25rem",
@@ -21,7 +26,8 @@ module.exports = {
         "pharmagency-grey":"#707070",
         "pharmagency-blue":"#0E6095",
         "pharmagency-red":"#EA1D2C",
-        "pharmagency-light-grey":"#DBDBDB"
+        "pharmagency-light-grey":"#DBDBDB",
+        "pharmagency-lighter-grey":"#F7F7F7"
       }
     },
   },

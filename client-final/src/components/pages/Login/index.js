@@ -63,9 +63,9 @@ export default function Login({ redirection = null, setToken, setCookie, token }
                         background: "url('/images/background.jpg')"
                     }
                 }></div>
-            <div className="w-full h-full flex justify-center items-center">
-                <div className="w-fit relative py-16 px-8 overflow-hidden rounded-3xl">
-                    <div className="relative z-50 flex flex-col items-center text-pharmagency-white">
+            <div className="w-full h-full flex justify-center items-center px-6">
+                <div className="w-full max-w-[550px] relative py-16 px-8 overflow-hidden rounded-3xl">
+                    <div className="relative z-50 flex flex-col items-center text-pharmagency-white w-full">
                         <WhiteLogo className={"max-w-[250px]"} />
                         <div className="mt-8">
                             <div className="uppercase text-20 font-light">
@@ -73,8 +73,8 @@ export default function Login({ redirection = null, setToken, setCookie, token }
                             </div>
                             <h1 className="uppercase text-50 font-medium">connexion</h1>
                         </div>
-                        <form className="mt-8 flex flex-col" onSubmit={handleSubmit}>
-                            <div className="min-w-[500px]">
+                        <form className="mt-8 flex flex-col w-full" onSubmit={handleSubmit}>
+                            <div className="w-full">
                                 <TextInput
                                     type={"email"}
                                     placeholder={"Adresse mail"}
