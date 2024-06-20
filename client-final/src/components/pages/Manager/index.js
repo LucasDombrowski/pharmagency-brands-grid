@@ -8,6 +8,7 @@ import Dropdown from "../../forms/inputs/Dropdown";
 import TextInput from "../../forms/inputs/TextInput";
 import Brands from "./Brands";
 import CategoriesList from "./CategoriesList";
+import CategoryBrands from "./CategoryBrands";
 
 export default function Manager({ userToken }) {
     const { token } = useParams();
@@ -17,8 +18,8 @@ export default function Manager({ userToken }) {
     const [search, setSearch] = useState("");
     const [brands, setBrands] = useState([]);
     const [useCategories, setUseCategories] = useState(false);
-    const [options,setOptions] = useState([]);
-    const [category,setCategory] = useState(null);
+    const [options, setOptions] = useState([]);
+    const [category, setCategory] = useState(null);
 
     async function getClient() {
         try {
@@ -40,10 +41,10 @@ export default function Manager({ userToken }) {
         }
     }
 
-    function getOptions(){
-        const labels = ["Aromathérapie","Homéopathie","Matériel médical","Orthopédie","Parapharmacie"];
+    function getOptions() {
+        const labels = ["Aromathérapie", "Homéopathie", "Matériel médical", "Orthopédie", "Parapharmacie"];
         var count = 0;
-        return labels.map((v)=>{
+        return labels.map((v) => {
             const data = {
                 brands: [],
                 name: v,
@@ -56,16 +57,16 @@ export default function Manager({ userToken }) {
                 label: v,
                 value: data
             }
-        }).filter((v)=>{
+        }).filter((v) => {
             return !testCategoryName(v.value.name);
         })
     }
 
-    function testCategoryName(name){
-        const filter = [...categories].find((v)=>{
+    function testCategoryName(name) {
+        const filter = [...categories].find((v) => {
             return v.name === name
         });
-        return (filter && filter!=undefined) ? filter : null;
+        return (filter && filter != undefined) ? filter : null;
     }
 
     function getNewCategoryId() {
@@ -75,6 +76,65 @@ export default function Manager({ userToken }) {
         return Math.max(...categories.map(({ id }) => id)) + 1;
     }
 
+    function deleteCategory(v) {
+        var updatedCategories = [...categories].filter(({ id }) => {
+            return id !== v.id
+        });
+        if (updatedCategories.length > 0) {
+            setCategories(updatedCategories);
+            setCategory(updatedCategories[0]);
+        } else {
+            updatedCategories = generatePlaceholderCategory();
+            setCategory(updatedCategories[0]);
+            setCategories(updatedCategories);
+        }
+    }
+
+    function addCategory(v) {
+        setCategories([...categories, v]);
+        setCategory(v);
+    }
+
+    function generatePlaceholderCategory(brands = []) {
+        return [
+            {
+                id: getNewCategoryId(),
+                name: placeholderCategoryName,
+                brands
+            }
+        ];
+    }
+
+    function uniqueBrand(brand) {
+        return category.brands.filter((v) => {
+            return v.id === brand.id
+        }).length === 0;
+    }
+
+    function addBrand(brand, index = null) {
+        if (uniqueBrand(brand)) {
+            const updatedBrands = [...category.brands];
+            if (index) {
+                updatedBrands.splice(index, 0, brand);
+            } else {
+                updatedBrands.push(brand);
+            }
+            const updatedCategory = {
+                ...category,
+                "brands": updatedBrands
+            };
+            setCategory(updatedCategory);
+            setCategories([...categories].map((v) => {
+                if (v.id === updatedCategory.id) {
+                    return updatedCategory;
+                } else {
+                    return v;
+                }
+            }));
+        } else {
+            setCategory(category);
+        }
+    };
 
     useEffect(() => {
         getClient();
@@ -82,24 +142,37 @@ export default function Manager({ userToken }) {
 
     useEffect(() => {
         if (client) {
-            setCategories(client.categories);
+            if (client.categories.length > 0) {
+                setCategories(client.categories);
+                setCategory(client.categories[0]);
+            } else {
+                const placeholderCategory = generatePlaceholderCategory();
+                setCategories(placeholderCategory);
+                setCategory(placeholderCategory[0]);
+            }
         }
     }, [client]);
 
     useEffect(() => {
-        if(client){
+        if (client) {
             getBrands();
         }
-    }, [search, client]);
+    }, [search, client, category]);
 
-    useEffect(()=>{
-        if(categories.length > 0 && !testCategoryName(placeholderCategoryName)){
+    useEffect(() => {
+        const test = testCategoryName(placeholderCategoryName);
+        if (categories.length > 0 && (categories.length > 1 || !test)) {
             setUseCategories(true);
+            if (test) {
+                deleteCategory(test);
+            }
+        } else {
+            setUseCategories(false);
         }
         setOptions(getOptions());
-    },[categories]);
+    }, [categories]);
 
-    const sideContainerClass = "w-[360px] h-full px-8 py-6";
+    const sideContainerClass = "min-w-[360px] max-w-[360px] h-full px-8 py-6";
     const placeholderCategoryName = "Sans catégories"
 
 
@@ -113,12 +186,12 @@ export default function Manager({ userToken }) {
                     )}>
                         <div className="flex flex-col h-full justify-between">
                             <div>
-                                <div className="min-h-[2rem]">
+                                {userToken && <div className="min-h-[2rem] mb-12">
                                     {userToken && <button className="text-24 font-medium" onClick={() => {
                                         navigate(-1);
                                     }}>&lt; Retour</button>}
-                                </div>
-                                <h1 className="text-24 font-medium mt-12">Vous modifiez actuellement :</h1>
+                                </div>}
+                                <h1 className="text-24 font-medium">Vous modifiez actuellement :</h1>
                                 <div className="flex flex-col mt-8">
                                     <span className="text-20 font-medium">{client.name}</span>
                                     <span className="font-light underline">{client.domain}</span>
@@ -136,21 +209,24 @@ export default function Manager({ userToken }) {
                     </div>
                     <div className="grow h-full px-8 py-8">
                         <div className="w-full h-full flex flex-col justify-between">
-                            <div className="grow">
+                            <div className="grow flex flex-col w-full overflow-hidden">
                                 <div>
                                     <div className="flex items-center">
                                         <h2 className="text-24 font-medium">Ajouter une nouvelle catégorie :</h2>
                                         <Dropdown options={options}
                                             placeholder={"Sélectionner..."}
                                             className={"min-w-[300px] ml-8"}
-                                            onChange={(v)=>{
-                                                setCategories([...categories,v]);
-                                                setCategory(v);
-                                            }}/>
+                                            onChange={(v) => {
+                                                addCategory(v);
+                                            }} />
                                     </div>
                                     <button className="font-light text-pharmagency-blue underline mt-4">Je ne souhaite pas utiliser de catégories</button>
                                 </div>
-                                <CategoriesList className={"mt-8"} useCategories={useCategories} categories={categories} category={category} setCategory={setCategory}/>
+                                <CategoriesList className={"mt-8"} useCategories={useCategories} categories={categories} category={category} setCategory={setCategory} deleteCategory={deleteCategory} />
+                                <div className="mt-8 grow w-full relative overflow-y-scroll pr-8">
+                                    {category && <CategoryBrands setCategory={setCategory} setCategories={setCategories} category={category} categories={categories} className={"w-full min-h-full"} />}
+                                    {(!category || category.brands.length === 0) && <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-24 font-medium">Veuillez ajouter vos marques...</h2>}
+                                </div>
                             </div>
                             <div className="w-full flex justify-center">
                                 <a className="text-20 font-medium underline" href="https://www.pharmagency.fr/" target="_blank ">pharmagency.fr</a>
@@ -165,7 +241,7 @@ export default function Manager({ userToken }) {
                             <div className="grow flex flex-col overflow-hidden">
                                 <h2 className="text-24 font-medium">Ajoutez vos marques</h2>
                                 <TextInput type={"search"} value={search} setValue={setSearch} placeholder={"Recherche..."} className={"bg-[#F7F7F7] text-16 my-8"} />
-                                <Brands brands={brands} className={"grow"}/>
+                                <Brands brands={brands} className={"grow"} addBrand={addBrand} />
                             </div>
                             <div className="w-full flex justify-center mt-8">
                                 <a className="text-20 font-medium underline text-pharmagency-cyan">Une marque manquante ?</a>

@@ -1,7 +1,7 @@
 import { ReactSortable } from "react-sortablejs";
 import BrandsGridItem from "./BrandsGridItem";
 import clsx from "clsx";
-export default function Brands({ className, brands }) {
+export default function Brands({ className, brands, addBrand }) {
     return (
         <ReactSortable
             className={clsx(
@@ -18,13 +18,16 @@ export default function Brands({ className, brands }) {
             sort={false}
             onRemove={(evt) => {
                 const removedId = evt.item.getAttribute('data-id');
+                console.log(evt.item);
                 const removedItem = brands.find((v) => {
                     return v.id == removedId;
                 });
-                //props.addBrand(removedItem, evt.newDraggableIndex);
+                addBrand(removedItem, evt.newDraggableIndex);
             }}>
             {brands.map(
-                v => <BrandsGridItem {...v}/>
+                (v,index) => <div onClick={()=>{
+                    addBrand(v);
+                }} data-id={v.id} key={v.id}><BrandsGridItem {...v} key={index}/></div>
             )}
         </ReactSortable>
     )
