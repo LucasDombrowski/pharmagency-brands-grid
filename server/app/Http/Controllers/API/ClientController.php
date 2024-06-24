@@ -46,7 +46,7 @@ class ClientController extends Controller
         $query = Client::query();
 
         if($request->filled("query")){
-            $query = $query->where("name","like",$request->input("query")."%");
+            $query = $query->where("name","like","%".$request->input("query")."%");
         }
 
         $query = $query->orderBy("created_at","desc");

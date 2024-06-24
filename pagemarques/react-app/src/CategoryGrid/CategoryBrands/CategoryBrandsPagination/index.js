@@ -28,7 +28,7 @@ export default function CategoryBrandsPagination(props) {
                     if(props.page + 1 <= props.max){
                         props.setPage(props.page+1);
                     }
-                }} primaryColor={props.primaryColor} secondaryColor={props.secondaryColor} locked={props.page + 1 > props.max}/>
+                }} primaryColor={props.primaryColor} secondaryColor={props.secondaryColor} locked={props.page + 1 > props.max} className={props.cssClasses.pagination_button}/>
             </nav>
         </div>
 

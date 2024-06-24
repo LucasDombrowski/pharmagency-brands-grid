@@ -95,7 +95,7 @@ export default function AllBrands({ token }) {
                         type={"search"}
                         value={search}
                         setValue={setSearch}
-                        placeholder={"Recherchez votre pharmacie..."}
+                        placeholder={"Recherchez une marque..."}
                         className={"grow"} />
                     <Link className="text-pharmagency-white underline ml-4 text-center" to={"/admin/"}>
                         Voir les domaines

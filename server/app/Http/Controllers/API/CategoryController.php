@@ -40,7 +40,7 @@ class CategoryController extends Controller
 
         $categories  = Category::query();
         if($request->filled("query")){
-            $categories->where("name","like",$request->input("query")."%");
+            $categories->where("name","like","%".$request->input("query")."%");
         }
 
         if(Auth::guard('sanctum')->check()){

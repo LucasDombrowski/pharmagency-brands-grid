@@ -1,6 +1,10 @@
 <div class="pagemarques-admin-main-container">
     <div>
         <h1>Page marques</h1>
+        <div>
+            <h2>Shortcode</h2>
+            <code>[pagemarques]</code>
+        </div>
         <form method="post" action="options.php" id="pagemarques-options-form">
             <?php   
             settings_fields("pagemarques_settings_general");

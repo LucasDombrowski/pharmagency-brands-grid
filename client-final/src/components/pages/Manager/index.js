@@ -67,6 +67,7 @@ export default function Manager({ userToken }) {
             "Diabète",
             "Diététique",
             "Dénutrition",
+            "Dermocosmétique",
             "Fleurs de Bach",
             "Herboristerie",
             "Homéopathie",
@@ -90,8 +91,11 @@ export default function Manager({ userToken }) {
             "Produits bio",
             "Produits cosmétiques",
             "Produits dentaires",
+            "Produits naturels",
             "Produits solaires",
             "Produits vétérinaires",
+            "Prothèses capillaires",
+            "Prothèses mammaires",
             "Soins capillaires",
             "Soins des pieds",
             "Soins de la peau",
@@ -100,7 +104,7 @@ export default function Manager({ userToken }) {
             "Tabagisme",
             "Thés / Tisanes",
             "Voyages",
-            "Zéro déchet"
+            "Zéro déchet",
         ];
 
         // Step 1: Get the occurrence count for each label
@@ -426,7 +430,7 @@ export default function Manager({ userToken }) {
                             <div className="grow flex flex-col w-full overflow-hidden">
                                 <div className="small-computer:flex-col small-computer:items-center w-full small-computer:flex">
                                     <div className="flex items-center small-computer:flex-col">
-                                        <h2 className="text-24 font-medium small-computer:mb-4 small-computer:text-center mobile:text-20 mr-8 small-computer:mr-0">Ajouter une nouvelle catégorie :</h2>
+                                        <h2 className="text-18 font-medium small-computer:mb-4 small-computer:text-center mobile:text-20 mr-8 small-computer:mr-0">Ajouter une nouvelle catégorie :</h2>
                                         {optionsLoading ? <Circles
                                             width={24}
                                             height={24}
@@ -437,7 +441,7 @@ export default function Manager({ userToken }) {
                                                     addCategory(v);
                                                 }} />}
                                     </div>
-                                    {!testCategoryName(placeholderCategoryName) && <button className="font-light text-pharmagency-blue underline mt-4 transition-all hover:text-pharmagency-red" onClick={() => {
+                                    {!testCategoryName(placeholderCategoryName) && <button className="font-light text-pharmagency-blue underline mt-4 transition-all hover:text-pharmagency-red text-14" onClick={() => {
                                         resetCategories();
                                     }}>Je ne souhaite pas utiliser de catégories</button>}
                                 </div>
@@ -518,7 +522,7 @@ export default function Manager({ userToken }) {
                                 <Brands brands={brands} className={"grow"} addBrand={addBrand} />
                             </div>
                             <div className="w-full flex justify-center mt-8">
-                                <a className="text-20 font-medium underline text-pharmagency-cyan transition-all hover:text-pharmagency-blue text-14" href={`${INDEX_URL}/suggestion`} target="_blank">Suggérer une marque ou une catégorie</a>
+                                <a className="text-14 font-medium underline text-pharmagency-cyan transition-all hover:text-pharmagency-blue text-14" href={`${INDEX_URL}/suggestion`} target="_blank">Suggérer une marque ou catégorie</a>
                             </div>
                         </div>
                     </div>

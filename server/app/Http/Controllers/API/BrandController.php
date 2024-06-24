@@ -60,7 +60,7 @@ class BrandController extends Controller
         $query = Brand::query();
 
         if ($request->filled("query")) {
-            $query->where("name", "like", parseBrandName($request->input("query")) . "%");
+            $query->where("name", "like", "%".parseBrandName($request->input("query")) . "%");
         }
 
         if ($request->filled("validated")) {

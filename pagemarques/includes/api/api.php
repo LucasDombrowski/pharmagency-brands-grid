@@ -9,8 +9,12 @@ function pagemarques_get_domain_data(string $domain){
             "exception"=>$data->exception
         ];
     } else  {
-        $data->all_brands = pagemarques_get_all_client_brands($data->id);
-        return $data;
+        if(isset($data->id)){
+            $data->all_brands = pagemarques_get_all_client_brands($data->id);
+            return $data;
+        } else {
+            return null;
+        }
     }
 }
 

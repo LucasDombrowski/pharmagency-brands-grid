@@ -5,5 +5,5 @@ function pagemarques_get_domain(){
 }
 
 function pagemarques_get_api_server(){
-    return "http://localhost:8000/api";
+    return "https://data.catalogues-pharmagency.fr/api";
 }
