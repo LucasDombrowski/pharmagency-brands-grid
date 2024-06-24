@@ -20,26 +20,53 @@ class CategoryController extends Controller
 
     /**
      * Display all client categories
+     * 
+     * ## Example
+     * ```
+     * https://data.catalogues-pharmagency.fr/api/categories?query="Lorem Ipsum"&limit=10&page=2
+     * ```
      */
 
     public function index(Request $request)
     {
-        $categories = Category::all();
+        $request->validate([
+            "query" => "nullable|string",
+            /**
+             * Paginate the results according to this value.
+             */
+            "limit" => "nullable|integer",
+            "page"=>"nullable|integer"
+        ]);
+
+        $categories  = Category::query();
+        if($request->filled("query")){
+            $categories->where("name","like",$request->input("query")."%");
+        }
+
         if(Auth::guard('sanctum')->check()){
-            $categories->load("client");
+            $categories->with("client");
         } else {
-            $categories->load([
+            $categories->with([
                 "client"=> function($query){
                     $query->select(["id","name","domain"]);
                 }
             ]);
         }
+
+        if($request->filled("limit")){
+            $results = $categories->paginate($request->input("limit", 10));
+        } else {
+            $results = $categories->get();
+        }
+
         return 
         /**
          * Returns all client categories in the database. The clients tokens will be displayed if you are authenticated.
-         * @body array{array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, departmentCode: int, token: string|null}}}
+         * 
+         * If the "limit" request parameter is null, only the data array will be returned.
+         * @body array{current_page: integer, data: array{array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, departmentCode: int, token: string|null}}}, first_page_url: string, from: integer, last_page: integer, last_page_url: string, links: array{array{url: string|null, label:string,active:bool}},next_page_url: string, path: string, per_page: integer, prev_page_url: string|null, to: integer, total: integer}
          */
-        $categories;
+        $results;
     }
 
     /**

@@ -4,7 +4,7 @@ export default function DeleteTrigger({className, onClick, message}){
     const crossPartClassName = "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[2px] bg-pharmagency-white"
     return (
         <button className={clsx(
-            "rounded-full bg-pharmagency-red aspect-square",
+            "rounded-full bg-pharmagency-red aspect-square transition-all hover:bg-pharmagency-cyan",
             className
         )}
         onClick={()=>{
