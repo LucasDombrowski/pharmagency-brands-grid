@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string("name");
             $table->bigInteger("client_id")->foreign()->references("id")->on("clients");
+            $table->integer("client_order")->nullable();
         });
     }
 

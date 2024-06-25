@@ -64,7 +64,7 @@ class CategoryController extends Controller
          * Returns all client categories in the database. The clients tokens will be displayed if you are authenticated.
          * 
          * If the "limit" request parameter is null, only the data array will be returned.
-         * @body array{current_page: integer, data: array{array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, departmentCode: int, token: string|null}}}, first_page_url: string, from: integer, last_page: integer, last_page_url: string, links: array{array{url: string|null, label:string,active:bool}},next_page_url: string, path: string, per_page: integer, prev_page_url: string|null, to: integer, total: integer}
+         * @body array{current_page: integer, data: array{array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, departmentCode: int, token: string|null}, client_order: int|null}}, first_page_url: string, from: integer, last_page: integer, last_page_url: string, links: array{array{url: string|null, label:string,active:bool}},next_page_url: string, path: string, per_page: integer, prev_page_url: string|null, to: integer, total: integer}
          */
         $results;
     }
@@ -95,10 +95,13 @@ class CategoryController extends Controller
              * The image url, it has to be a png or jpg file.
              * @example https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png
              */
-            "brands.*.url"=>"nullable|url"
+            "brands.*.url"=>"nullable|url",
+            //The index in the client categories order
+            "order"=>"integer|nullable"
         ]);
 
-        if(Client::find($request->input("client_id"))->token != $request->input("client_token")){
+        $client = Client::find($request->input("client_id"));
+        if($client->token != $request->input("client_token")){
             return 
             /**
              * Error thrown when a wrong id/token combination is given.
@@ -109,7 +112,8 @@ class CategoryController extends Controller
 
         $category = Category::create([
             "name"=>$request->input("name"),
-            "client_id"=>$request->input("client_id")
+            "client_id"=>$client->id,
+            "client_order"=>$request->input("order",count($client->categories) + 1)
         ]);
 
         $count = 1;
@@ -142,7 +146,7 @@ class CategoryController extends Controller
         return 
         /**
          * Returns the new client's category with its brands.
-         * @body array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, departmentCode: int, token: string}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
+         * @body array{id: int, name: string, client_id: int, client_order: int, client: array{id: int, name: string, domain: string, departmentCode: int, token: string}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
          */
         response()->json($category->load("client","brands"),201);
 
@@ -166,7 +170,7 @@ class CategoryController extends Controller
         return 
         /**
          * Returns the client category which has the given id in the database, with its brands. The client token will be displayed if you are authenticated.
-         * @body array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, departmentCode: int, token: string|null}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
+         * @body array{id: int, name: string, client_id: int, client_order: int|null, client: array{id: int, name: string, domain: string, departmentCode: int, token: string|null}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
          */
         response()->json($category);
     }
@@ -198,7 +202,9 @@ class CategoryController extends Controller
              * The image url, it has to be a png or jpg file.
              * @example https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png
              */
-            "brands.*.url"=>"nullable|url"
+            "brands.*.url"=>"nullable|url",
+            //The index in the client categories order
+            "order"=>"integer|nullable"
         ]);
 
         if(Client::find($request->input("client_id"))->token != $request->input("client_token")){
@@ -250,10 +256,15 @@ class CategoryController extends Controller
             $count++;
         }
 
+        $category->update([
+            "name"=>$request->input("name"),
+            "client_order"=>$request->input("order",$category->client_order)
+        ]);
+
         return 
         /**
          * Returns the updated category with its brands.
-         * @body array{id: int, name: string, client_id: int, client: array{id: int, name: string, domain: string, departmentCode: int, token: string}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
+         * @body array{id: int, name: string, client_id: int, client_order: int|null, client: array{id: int, name: string, domain: string, departmentCode: int, token: string}, brands: array{array{id: int, png_url: string|null, jpg_url: string|null, validated: bool}}}
          */
         response()->json($category->load("brands"));
     }
@@ -279,6 +290,14 @@ class CategoryController extends Controller
              * @status 401
              */
             response()->json(["message"=>"Client id and token are not matching"],401);
+        }
+        $categories = $category->client->categories;
+        $count = 1;
+        foreach($categories as $clientCategory){
+            $clientCategory->update([
+                "client_order"=>$count
+            ]);
+            $count++;
         }
         $category->brands()->detach();
         $category->delete();

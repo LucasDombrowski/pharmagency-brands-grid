@@ -11,7 +11,7 @@ class Category extends Model
     protected $table = "categories";
     public $timestamps = false;
 
-    protected $fillable = ["name","client_id"];
+    protected $fillable = ["name","client_id","client_order"];
 
     protected $hidden = ['pivot'];
 

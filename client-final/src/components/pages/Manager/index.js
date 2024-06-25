@@ -446,7 +446,7 @@ export default function Manager({ userToken }) {
                                         resetCategories();
                                     }}>Je ne souhaite pas utiliser de catégories</button>}
                                 </div>
-                                <CategoriesList className={"mt-8 border-b border-pharmagency-blue pb-8 w-full"} useCategories={useCategories} categories={categories} category={category} setCategory={setCategory} deleteCategory={deleteCategory} />
+                                <CategoriesList className={"mt-8 border-b border-pharmagency-blue pb-8 w-full"} useCategories={useCategories} categories={categories} category={category} setCategory={setCategory} deleteCategory={deleteCategory} setCategories={setCategories}/>
                                 <div className="pt-8 grow w-full overflow-y-scroll pr-8 relative">
                                     {category && <CategoryBrands setCategory={setCategory} setCategories={setCategories} category={category} categories={categories} className={"w-full min-h-full"} setEdits={setEdits} />}
                                     {(!category || category.brands.length === 0) && <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-24 font-medium text-center">Veuillez ajouter vos marques...</h2>}

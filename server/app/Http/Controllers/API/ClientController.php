@@ -108,7 +108,7 @@ class ClientController extends Controller
         return
         /**
          * Returns the client which has the given id in the database, with his categories and their brands. His token will be displayed if you are authenticated.
-         * @body array{id: int, name: string, domain: string, departmentCode: int, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
+         * @body array{id: int, name: string, domain: string, departmentCode: int, token: string|null, categories: array{array{id: int, name: string, client_id: int, client_order: int|null, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
          */
         response()->json($client->load("categories","categories.brands"));
     }
@@ -122,7 +122,7 @@ class ClientController extends Controller
 
          /**
          * Returns the client which has the given token in the database, with his categories and their brands.
-         * @body array{id: int, name: string, domain: string, departmentCode: int, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
+         * @body array{id: int, name: string, domain: string, departmentCode: int, token: string|null, categories: array{array{id: int, name: string, client_id: int, client_order: int|null, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
          */
 
         response()->json(Client::where("token",$token)->firstOrFail()->load("categories","categories.brands"));
@@ -140,7 +140,7 @@ class ClientController extends Controller
         return 
         /**
          * Returns the client which has the given domain in the database, with his categories and their brands. His token will be displayed if you are authenticated.
-         * @body array{id: int, name: string, domain: string, departmentCode: int, token: string|null, categories: array{array{id: int, name: string, client_id: int, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
+         * @body array{id: int, name: string, domain: string, departmentCode: int, token: string|null, categories: array{array{id: int, name: string, client_id: int, client_order: int|null, brands: array{array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: bool}}}}}
          */
         response()->json($client->load("categories","categories.brands"));
 
