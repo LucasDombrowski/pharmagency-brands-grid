@@ -9,16 +9,17 @@ export default function CategoryBrandsPagination(props) {
                     if(props.page > 1){
                         props.setPage(props.page-1);
                     }
-                }} primaryColor={props.primaryColor} secondaryColor={props.secondaryColor} className={props.cssClasses.pagination_button}/>
+                }} primaryColor={props.primaryColor} secondaryColor={props.secondaryColor} className={clsx(
+                    props.cssClasses.pagination_button,
+                    props.cssClasses.button
+                )} borderRadius={props.borderRadius}/>
                 <span className={clsx(
                     "relative inline-flex items-center px-4 py-1 border text-sm font-medium",
                     props.cssClasses.pagination_index
                 )}
                 style={
                     {
-                        "background":props.secondaryColor,
-                        "color":props.primaryColor,
-                        "borderColor":props.primaryColor
+                        "color":props.secondaryColor,
                     }
                 }
                 id="pagemarques-pagination-index">
@@ -28,7 +29,10 @@ export default function CategoryBrandsPagination(props) {
                     if(props.page + 1 <= props.max){
                         props.setPage(props.page+1);
                     }
-                }} primaryColor={props.primaryColor} secondaryColor={props.secondaryColor} locked={props.page + 1 > props.max} className={props.cssClasses.pagination_button}/>
+                }} primaryColor={props.primaryColor} secondaryColor={props.secondaryColor} locked={props.page + 1 > props.max} className={clsx(
+                    props.cssClasses.pagination_button,
+                    props.cssClasses.button
+                )} borderRadius={props.borderRadius}/>
             </nav>
         </div>
 

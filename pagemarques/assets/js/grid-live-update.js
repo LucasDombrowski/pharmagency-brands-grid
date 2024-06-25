@@ -88,9 +88,19 @@ function displayRealGrid(clone){
     grid.style.display = "";
 }
 
+function pagemarquesUpdateBorderRadius(e){
+    const value = e.target.value;
+    console.log(value);
+    const elements = document.querySelectorAll(".pagemarques-button");
+    for(let element of elements){
+        element.style.borderRadius = `${value}px`;
+    }
+}
+
 
 window.addEventListener("load", () => {
     const categoryInput = document.getElementById("pagemarques_settings[pagemarques_categories]");
+    const radiusInput = document.getElementById("pagemarques_settings[pagemarques_borderRadius]");
     const gapInput = document.getElementById("pagemarques_settings[pagemarques_gridGap]");
     const gridColumnInputs = {
         "computer":document.getElementById("pagemarques_settings[pagemarques_columnsComputer]"),
@@ -120,13 +130,17 @@ window.addEventListener("load", () => {
             input: document.getElementById("pagemarques_settings[pagemarques_cssClasses][category_label]"),
             query: document.querySelectorAll(".pagemarques-category-list-item")
         },
-        button : {
+        paginationButton : {
             input: document.getElementById("pagemarques_settings[pagemarques_cssClasses][pagination_button]"),
             query: document.querySelectorAll(".pagemarques-pagination-button")
         },
         index : {
             input:  document.getElementById("pagemarques_settings[pagemarques_cssClasses][pagination_index]"),
             query: document.querySelectorAll("#pagemarques-pagination-index")
+        },
+        button : {
+            input: document.getElementById("pagemarques_settings[pagemarques_cssClasses][button]"),
+            query: document.querySelectorAll(".pagemarques-button")
         }
     };
 
@@ -196,5 +210,7 @@ window.addEventListener("load", () => {
             }
         });
     }
+
+    radiusInput.addEventListener("change",pagemarquesUpdateBorderRadius);
 
 });

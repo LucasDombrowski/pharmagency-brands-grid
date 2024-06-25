@@ -41,13 +41,19 @@
 }
 
 .pagemarques-color-input{
-    display: flex;
-    align-items: center;
     margin-block: 1rem;
 }
 
 .pagemarques-color-input label{
     margin-left: 1rem;
+    white-space: nowrap;
+    display: block;
+    margin-left: 0;
+    margin-bottom: 0.5rem;
+}
+
+.pagemarques-color-input > div{
+    display: flex;
 }
 
 .pagemarques-hidden{
@@ -71,6 +77,47 @@
     margin-bottom: 2rem;
 }
 
+.code-container {
+    position: relative;
+    display: inline-block;
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.code-container:hover {
+    background: #e1e1e1;
+}
+
+.tooltip {
+    visibility: hidden;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Position the tooltip above the text */
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* At the bottom of the tooltip */
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+}
+
 @media screen and (max-width: 800px){
     .pagemarques-admin-main-container{
         flex-direction: column;
@@ -79,3 +126,4 @@
         margin-left: 0;
     }
 }
+

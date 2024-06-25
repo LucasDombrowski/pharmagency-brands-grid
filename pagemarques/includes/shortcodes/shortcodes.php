@@ -14,14 +14,15 @@ function pagemarques_enqueue_react_script() {
     $params = [
         "domain" => isset($options["pagemarques_domain"]) ? $options["pagemarques_domain"] : pagemarques_get_domain(),
         "columns" => [
-            "computer"=>isset($options["pagemarques_columnsComputer"]) ? $options["pagemarques_columnsComputer"] : 3,
+            "computer"=>isset($options["pagemarques_columnsComputer"]) ? $options["pagemarques_columnsComputer"] : 6,
             "tablet"=>isset($options["pagemarques_columnsTablet"]) ? $options["pagemarques_columnsTablet"] : 2,
             "mobile"=>isset($options["pagemarques_columnsMobile"]) ? $options["pagemarques_columnsMobile"] : 1
         ],
         "gridGap" => isset($options["pagemarques_gridGap"]) ? $options["pagemarques_gridGap"] : 16,
+        "borderRadius" => isset($options["pagemarques_borderRadius"]) ? $options["pagemarques_borderRadius"] : 3,
         "displayCategories" => isset($options["pagemarques_categories"]) ? $options["pagemarques_categories"] : false,
-        "primaryColor" => isset($options["pagemarques_primaryColor"]) ? $options["pagemarques_primaryColor"] : "#000000",
-        "secondaryColor"=>isset($options["pagemarques_secondaryColor"]) ? $options["pagemarques_secondaryColor"] : "#FFFFFF",
+        "primaryColor" => isset($options["pagemarques_primaryColor"]) ? $options["pagemarques_primaryColor"] : "#FFFFFF",
+        "secondaryColor"=>isset($options["pagemarques_secondaryColor"]) ? $options["pagemarques_secondaryColor"] : "#089800",
         "imageSize"=>isset($options["pagemarques_imageSize"]) ? $options["pagemarques_imageSize"] : 300,
         "loading"=>isset($options["pagemarques_loading"]) ? $options["pagemarques_loading"] : "lazy_loading",
         "paginationLimit"=>isset($options["pagemarques_paginationLimit"]) ? $options["pagemarques_paginationLimit"] : 15,

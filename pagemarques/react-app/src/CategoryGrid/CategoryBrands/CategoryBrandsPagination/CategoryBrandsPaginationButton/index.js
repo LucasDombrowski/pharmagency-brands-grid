@@ -4,17 +4,18 @@ export default function CategoryBrandsPaginationButton(props){
     return (
         <button type="button" class={
             clsx(
-                "relative inline-flex items-center px-4 py-1 border text-sm font-medium",
-                props.locked ? "opacity-50" : "cursor-pointer",
-                "pagemarques-pagination-button",
+                "text-base m-2 font-medium px-3 py-1.5 border-none",
+                "bg-[#F7F7F7]",
+                props.locked ? "opacity-50" : "cursor-pointer hover:bg-[#4b4b4b20]",
+                "transition-all pagemarques-pagination-button pagemarques-button",
                 props.className
             )
         } onClick={props.onClick}
         style={
             {
-                "background":props.secondaryColor,
-                "color":props.primaryColor,
-                "borderColor":props.primaryColor
+                "borderRadius":props.borderRadius + "px",
+                "outline": "none", // Remove default focus outline
+                "boxShadow": "none" // Remove focus outline in some browsers
             }
         }>
             {props.label}

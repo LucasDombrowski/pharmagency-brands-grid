@@ -5,7 +5,7 @@ const CategoryBrandsItem = forwardRef((props, ref) => {
     return (
         <div ref={ref} className={clsx(
             props.cssClasses.image_container,
-            "pagemarques-grid-item"
+            "pagemarques-grid-item transition-all hover:scale-105"
         )}>
             <img
                 src={props.png_url ? props.png_url : props.jpg_url}
