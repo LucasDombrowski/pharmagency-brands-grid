@@ -273,7 +273,7 @@ export default function Manager({ userToken }) {
         const validCategories = [...categories].filter(({ brands }) => {
             return brands.length > 0
         });
-
+        var order = 1;
         for (let category of validCategories) {
             const url = `${BASE_URL}/categories${!category.new ? ("/" + category.id + "?_method=PUT") : ""}`;
             const data = {
@@ -285,7 +285,8 @@ export default function Manager({ userToken }) {
                         "name": v.name,
                         "url": (v.png_url ? v.png_url : v.jpg_url).replace(new RegExp(" ", "g"), "%20")
                     }
-                })
+                }),
+                order
             }
             try {
                 await axios.post(url, data, {
@@ -297,6 +298,7 @@ export default function Manager({ userToken }) {
             } catch (err) {
                 console.log(err);
             }
+            order++;
         }
 
         const alreadyExistingCategories = [...validCategories].filter((v) => {

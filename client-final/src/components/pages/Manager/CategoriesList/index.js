@@ -18,22 +18,17 @@ export default function CategoriesList({ className, useCategories, categories, s
     };
 
     const sortableItems = [
-        { id: 'header', content: (
-            <div className="flex items-center flex-wrap">
-                <h2 className="mr-2 whitespace-nowrap">{useCategories ? "Vos catégories :" : "Sans catégories"}</h2>
-            </div>
-        ), disabled: true },
         ...(useCategories && category ? categories.map((v) => ({
             ...v,
             content: (
-                <div className="mx-3 relative" key={v.id}>
+                <div className="mr-6 relative mb-4" key={v.id}>
                     <button className={clsx(
-                        "transition-all whitespace-nowrap my-2 cursor-move",
+                        "transition-all whitespace-nowrap cursor-move",
                         v.id === category.id ? "text-pharmagency-cyan" : "text-pharmagency-grey hover:text-pharmagency-blue"
                     )} onClick={() => setCategory(v)}>
                         {v.name}
                     </button>
-                    <DeleteTrigger className={"w-[20px] absolute right-0 top-0 translate-x-1/2 -translate-y-1/2"} message={`Voulez-vous supprimer la catégorie "${v.name}" et toutes les marques de sa collection ?`} onClick={() => deleteCategory(v)} />
+                    <DeleteTrigger className={"w-[16px] absolute right-0 top-0 translate-x-1/2 -translate-y-full"} message={`Voulez-vous supprimer la catégorie "${v.name}" et toutes les marques de sa collection ?`} onClick={() => deleteCategory(v)} />
                 </div>
             )
         })) : [])
@@ -43,7 +38,7 @@ export default function CategoriesList({ className, useCategories, categories, s
         <div className={className}>
             {isTablet ? (
                 <div className="w-full flex flex-col items-center">
-                    <h2 className="text-18 font-medium mb-4">{useCategories ? "Vos catégories :" : "Sans catégories"}</h2>
+                    <h2 className="text-18 font-medium">{useCategories ? "Vos catégories :" : "Sans catégories"}</h2>
                     {(useCategories && category) && (
                         <div className="flex items-center justify-center w-full">
                             <Dropdown className={"w-full max-w-[300px]"} options={categories.map((v) => ({
@@ -56,13 +51,18 @@ export default function CategoriesList({ className, useCategories, categories, s
                 </div>
             ) : (
                 <div>
-                    <ReactSortable list={sortableItems} setList={handleSortChange} className="inline-flex items-center flex-wrap text-18" animation={150}>
-                        {sortableItems.map((item, index) => (
-                            <div key={index} className="sortable-item" data-id={item.id}>
-                                {item.content}
-                            </div>
-                        ))}
-                    </ReactSortable>
+                    <div className="flex items-start">
+                        <div className="flex items-center text-18">
+                            <h2 className="mr-6 whitespace-nowrap">{useCategories ? "Vos catégories :" : "Sans catégories"}</h2>
+                        </div>
+                        <ReactSortable list={sortableItems} setList={handleSortChange} className="inline-flex items-center flex-wrap text-18" animation={150}>
+                            {sortableItems.map((item, index) => (
+                                <div key={index} className="sortable-item" data-id={item.id}>
+                                    {item.content}
+                                </div>
+                            ))}
+                        </ReactSortable>
+                    </div>
                     {(useCategories && category) && (
                         <div className="text-14 font-medium text-pharmagency-grey italic small-computer:text-16">
                             Cliquez sur l'une de vos catégories pour modifier le contenu
