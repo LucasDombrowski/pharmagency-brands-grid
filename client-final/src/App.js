@@ -17,7 +17,7 @@ function App() {
   const [token, setToken] = useState((cookies.token && cookies.token!=undefined) ? cookies.token : null);
 
   return (
-    <div className='font-poppins'>
+    <div className='font-dm-sans'>
       <Routes>
         <Route
         path={"/login"}

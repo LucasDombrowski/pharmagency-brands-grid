@@ -34,10 +34,10 @@ export default function AddBrand({token}){
             {
                 id: null,
                 name: "nom-de-la-marque",
-                png_url:"https://i0.wp.com/caravanedesdixmots.com/wp-content/uploads/2021/05/placeholder.png?ssl=1",
+                png_url:"https://www.catalogues-pharmagency.fr/wp-content/uploads/marques/avene.png",
                 jpg_url:null
             }
-        } title={"Création d'une marque"}
+        } title={"Ajouter marque"}
         onSubmit={handleSubmit}
         loading={loading}
         error={error}/>

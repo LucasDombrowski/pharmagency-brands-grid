@@ -6,42 +6,16 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../../settings";
 import DeleteTrigger from "../../DeleteTrigger";
+import Button from "../../Button";
 
 export default function AllBrands({ token }) {
     const [search, setSearch] = useState("");
-    const [page, setPage] = useState(1);
-    const [max, setMax] = useState(false);
+    const [page, setPage] = useState(null);
     const [brands, setBrands] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [max,setMax] = useState(false);
 
     const containerClass = "max-w-[1200px]";
-    const observer = useRef(null);
     const gridContainer = useRef(null);
-
-    const lastBrandElementRef = useCallback(node => {
-        if (observer.current) observer.current.disconnect();
-
-        observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && !loading && !max) {
-                setPage(prevPage => prevPage + 1);
-            }
-        }, {
-            root: null,
-            rootMargin: "0px",
-            threshold: 0.1
-        });
-
-        if (node) observer.current.observe(node);
-    }, [loading, max]);
-
-    useEffect(() => {
-        if (brands.length > 0) {
-            const lastElement = gridContainer.current?.lastElementChild;
-            if (lastElement) {
-                lastBrandElementRef(lastElement);
-            }
-        }
-    }, [brands, lastBrandElementRef]);
 
     async function handleDelete(id) {
         try {
@@ -50,41 +24,51 @@ export default function AllBrands({ token }) {
                     "Authorization": `Bearer ${token}`
                 }
             });
-            setPage(1);
-            setMax(false);
-            setBrands([]);
-            getBrands(true);
+            if(page){
+                resetPages();
+            }
         } catch (err) {
             console.log(err);
         }
     }
 
-    async function getBrands(reset = false) {
-        const limit = 50;
+    async function getBrands() {
+        const limit = page===1 ? 39 : 40;
         try {
-            setLoading(true);
-            const response = await axios.get(`${BASE_URL}/brands?limit=${limit}&query=${search}`);
-            setBrands(response.data.data);
-
-            if (!response.data.next_page_url) {
-                setMax(true);
+            const response = await axios.get(`${BASE_URL}/brands?limit=${limit}&query=${search}&page=${page}`);
+            const data = page===1 ? response.data.data : [...brands,...response.data.data];
+            setBrands(data);
+            if(!response.data.next_page_url){
+               setMax(true); 
+            } else {
+                setMax(false);
             }
         } catch (err) {
             console.log(err);
-        } finally {
-            setLoading(false);
+        }
+    }
+
+    function resetPages(){
+        if(page===1){
+            getBrands();
+        } else {
+            setPage(1);
         }
     }
 
     useEffect(() => {
-        setMax(false);
-        setBrands([]);
-        getBrands(true);
+        resetPages();
     }, [search]);
+
+    useEffect(()=>{
+        if(page){
+            getBrands();
+        }
+    },[page]);
 
     return (
         <div className="w-full">
-            <div className="w-full bg-gradient-to-r from-pharmagency-blue to-pharmagency-cyan p-6 sticky top-0 left-0 flex items-center z-50">
+            <div className="w-full bg-gradient-to-r from-pharmagency-blue to-pharmagency-cyan py-6 px-8 sticky top-0 left-0 flex items-center z-50 justify-between rounded-b-3xl">
                 <div className="mr-8">
                     <WhiteLogo className={"max-w-[100px] mobile:max-w-[60px]"} />
                 </div>
@@ -97,10 +81,12 @@ export default function AllBrands({ token }) {
                         setValue={setSearch}
                         placeholder={"Recherchez une marque..."}
                         className={"grow"} />
-                    <Link className="text-pharmagency-white underline ml-4 text-center" to={"/admin/"}>
-                        Voir les domaines
-                    </Link>
                 </div>
+                <Link className="ml-8" to={"/admin"}>
+                    <Button className={"text-pharmagency-white border border-pharmagency-white text-14 transition-all hover:bg-pharmagency-white hover:text-pharmagency-cyan font-medium whitespace-nowrap"}>
+                        Voir les domaines
+                    </Button>
+                </Link>
             </div>
             <div className={clsx(
                 "mt-8 mx-auto px-6",
@@ -114,23 +100,20 @@ export default function AllBrands({ token }) {
                     </div>
                     {brands.map((v, index) => (
                         <div key={v.id} className="opacity-50 transition-all hover:opacity-100 scale-100 hover:scale-105 tablet:opacity-100 relative border-2 border-pharmagency-blue">
-                            {index === brands.length - 1 ? (
-                                <div ref={lastBrandElementRef} className="w-full">
-                                    <Link to={`/admin/marques/${v.id}`} className="block w-full">
-                                        <img alt={v.name} src={v.png_url ? v.png_url : v.jpg_url} className="w-full aspect-square object-contain" />
-                                    </Link>
-                                </div>
-                            ) : (
-                                <Link to={`/admin/marques/${v.id}`} className="block w-full">
-                                    <img alt={v.name} src={v.png_url ? v.png_url : v.jpg_url} className="w-full aspect-square object-contain" />
-                                </Link>
-                            )}
-                            <DeleteTrigger className={"absolute w-[24px] top-0 right-0 translate-x-1/2 -translate-y-1/2"} message={`Voulez-vous vraiment supprimer définitivement la marque "${v.name}" ?`} onClick={()=>{
+                            <Link to={`/admin/marques/${v.id}`} className="block w-full">
+                                <img alt={v.name} src={v.png_url ? v.png_url : v.jpg_url} className="w-full aspect-square object-contain" />
+                            </Link>
+                            <DeleteTrigger className={"absolute w-[24px] top-0 right-0 translate-x-1/2 -translate-y-1/2"} message={`Voulez-vous vraiment supprimer définitivement la marque "${v.name}" ?`} onClick={() => {
                                 handleDelete(v.id);
-                            }}/>
+                            }} />
                         </div>
                     ))}
                 </div>
+            </div>
+            <div className="flex justify-center items-center py-4">
+                {!max && <Button onClick={()=>{
+                    setPage(page+1);
+                }} className={"text-pharmagency-cyan underline transition-all hover:text-pharmagency-blue"}>Voir plus</Button>}
             </div>
         </div>
     );

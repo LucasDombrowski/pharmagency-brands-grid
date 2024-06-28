@@ -49,7 +49,7 @@ export default function EditBrand({token}){
 
     if(brand){
         return (
-            <BrandForm brand={brand} title={"Modification de la marque"}
+            <BrandForm brand={brand} title={"Modifier marque"}
             onSubmit={handleSubmit}
             loading={loading}
             error={error}/>

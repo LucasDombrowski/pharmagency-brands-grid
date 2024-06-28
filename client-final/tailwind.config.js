@@ -21,7 +21,7 @@ module.exports = {
     },
     extend: {
       fontFamily:{
-        "poppins":"Poppins, sans-serif"
+        "dm-sans":"DM Sans, sans-serif"
       },
       colors: {
         "pharmagency-cyan":"#00B591",

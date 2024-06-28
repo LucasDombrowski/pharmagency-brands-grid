@@ -23,8 +23,10 @@ export default function Manager({ userToken }) {
     const [brands, setBrands] = useState([]);
     const [useCategories, setUseCategories] = useState(false);
     const [options, setOptions] = useState([]);
+    const [optionName, setOptionName] = useState("");
     const [allOptions, setAllOptions] = useState([]);
     const [optionsLoading, setOptionsLoading] = useState(false);
+    const [optionSaveLoading, setOptionSaveLoading] = useState(false);
     const [category, setCategory] = useState(null);
     const [loading, setLoading] = useState(false);
     const [edits, setEdits] = useState(false);
@@ -55,59 +57,7 @@ export default function Manager({ userToken }) {
 
     async function getOptions() {
         setOptionsLoading(true);
-        const labels = [
-            "Anti-moustique / Anti-poux",
-            "Aromathérapie",
-            "Autres",
-            "CBD",
-            "Compléments alimentaires",
-            "Contactologie",
-            "Contention",
-            "Coutellerie",
-            "Diabète",
-            "Diététique",
-            "Dénutrition",
-            "Dermocosmétique",
-            "Fleurs de Bach",
-            "Herboristerie",
-            "Homéopathie",
-            "Hygiène bucco-dentaire",
-            "Hygiène féminine",
-            "Hygiène intime",
-            "Incontinence",
-            "Lunettes / loupes",
-            "Maquillage",
-            "Matériel médical",
-            "Médecine naturelle",
-            "Médication familiale",
-            "Minéraux et vitamines",
-            "Nutrition infantile",
-            "Oncologie",
-            "Orthopédie",
-            "Parapharmacie",
-            "Parfumerie",
-            "Phytothérapie",
-            "Premiers soins",
-            "Produits bébés",
-            "Produits bio",
-            "Produits cosmétiques",
-            "Produits dentaires",
-            "Produits naturels",
-            "Produits solaires",
-            "Produits vétérinaires",
-            "Prothèses capillaires",
-            "Prothèses mammaires",
-            "Soins capillaires",
-            "Soins des pieds",
-            "Soins de la peau",
-            "Soins du visage",
-            "Soins homme",
-            "Tabagisme",
-            "Thés / Tisanes",
-            "Voyages",
-            "Zéro déchet",
-        ];
-
+        const labels = (await axios.get(`${BASE_URL}/displayed-categories`)).data;
         // Step 1: Get the occurrence count for each label
         const labelCounts = await Promise.all(labels.map(async (label) => {
             const count = await countCategoryNameOccurences(label);
@@ -265,6 +215,35 @@ export default function Manager({ userToken }) {
         const isConfirmed = confirm("Annuler toutes les modifications ?");
         if (isConfirmed) {
             getClient();
+        }
+    }
+
+    async function saveCategoryName() {
+        // eslint-disable-next-line no-restricted-globals
+        const isConfirmed = confirm(`Enregister la catégorie ${optionName} ?`);
+        if (isConfirmed) {
+            setOptionSaveLoading(true);
+            const data = { "name": optionName }
+            try {
+                const response = await axios.post(`${BASE_URL}/displayed-categories`, data, {
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${userToken}`
+                    }
+                });
+                addCategory({
+                    "id":categories.length + 1,
+                    "name":response.data.displayed_category.name,
+                    "brands":[],
+                    "new":true
+                });
+                getOptions();
+            } catch (err) {
+                console.log(err);
+            } finally{
+                setOptionSaveLoading(false);
+            }
         }
     }
 
@@ -442,13 +421,26 @@ export default function Manager({ userToken }) {
                                                 className={"min-w-[300px]"}
                                                 onChange={(v) => {
                                                     addCategory(v);
-                                                }} />}
+                                                }}
+                                                onInputChange={setOptionName}
+                                                inputValue={optionName}
+                                                noOptionsComponent={
+                                                    userToken && <>
+                                                        {optionSaveLoading ? <Circles
+                                                            width={16}
+                                                            height={16}
+                                                            color={colors.cyan} />
+                                                            : <button className="text-pharmagency-cyan transition-all hover:text-pharmagency-blue" onClick={saveCategoryName}>
+                                                                {`Enregistrer la catégorie ${optionName}`}
+                                                            </button>}
+                                                    </>
+                                                } />}
                                     </div>
                                     {!testCategoryName(placeholderCategoryName) && <button className="font-light text-pharmagency-blue underline mt-4 transition-all hover:text-pharmagency-red text-14" onClick={() => {
                                         resetCategories();
                                     }}>Je ne souhaite pas utiliser de catégories</button>}
                                 </div>
-                                <CategoriesList className={"mt-8 border-b border-pharmagency-blue pb-8 w-full"} useCategories={useCategories} categories={categories} category={category} setCategory={setCategory} deleteCategory={deleteCategory} setCategories={setCategories}/>
+                                <CategoriesList className={"mt-8 border-b border-pharmagency-blue pb-8 w-full"} useCategories={useCategories} categories={categories} category={category} setCategory={setCategory} deleteCategory={deleteCategory} setCategories={setCategories} />
                                 <div className="pt-8 grow w-full overflow-y-scroll pr-8 relative">
                                     {category && <CategoryBrands setCategory={setCategory} setCategories={setCategories} category={category} categories={categories} className={"w-full min-h-full"} setEdits={setEdits} />}
                                     {(!category || category.brands.length === 0) && <h2 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-24 font-medium text-center">Veuillez ajouter vos marques...</h2>}
