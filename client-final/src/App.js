@@ -11,6 +11,8 @@ import Manager from './components/pages/Manager';
 import AllBrands from './components/pages/AllBrands';
 import AddBrand from './components/pages/AddBrand';
 import EditBrand from './components/pages/EditBrand';
+import AddDomain from './components/pages/AddDomain';
+import EditDomain from './components/pages/EditDomain';
 
 function App() {
   const [cookies,setCookie,removeCookie] = useCookies(["token"]);
@@ -48,6 +50,15 @@ function App() {
         <Route
         path='/admin/marques/:id'
         element={<EditBrand token={token}/>}/>
+        <Route
+        path='/admin/add'
+        element={<AddDomain token={token}/>}/>
+        <Route
+        path='/admin/ajouter'
+        element={<AddDomain token={token}/>}/>
+        <Route
+        path='/admin/:id'
+        element={<EditDomain token={token}/>}/>
         <Route
         path='/'
         element={<Redirect url={"/admin"}/>}/>

@@ -1,6 +1,6 @@
 import clsx from "clsx"
 
-export default function TextInput({className, type, placeholder, value, setValue, svgIcon, required = false, backgroundClass = "bg-pharmagency-white"}){
+export default function TextInput({className, type, placeholder, value, setValue, svgIcon, min, required = false, backgroundClass = "bg-pharmagency-white"}){
     return (
         <div className={clsx(
             " py-3 px-5 rounded-3xl",
@@ -13,7 +13,7 @@ export default function TextInput({className, type, placeholder, value, setValue
                 </div>
                 <input type={type} placeholder={placeholder} value={value} onChange={(e)=>{
                     setValue(e.target.value)
-                }} className="bg-transparent grow outline-none placeholder:text-pharmagency-grey text-pharmagency-blue min-w-[0px] w-full" required={required}/>
+                }} className="bg-transparent grow outline-none placeholder:text-pharmagency-grey text-pharmagency-blue min-w-[0px] w-full" required={required} min={min}/>
             </div>
         </div>
     )

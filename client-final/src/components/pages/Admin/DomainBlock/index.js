@@ -39,7 +39,7 @@ export default function DomainBlock({ id, name, domain, token, className, handle
         <div className="w-full py-6 border-b border-pharmagency-light-grey">
             <div className="flex items-center justify-between mobile:flex-col">
                 <div className="flex flex-col mobile:items-center mobile:text-center mobile:mb-8">
-                    <span className="font-medium text-20">{name}</span>
+                    <Link to={`/admin/${id}`} className="font-medium text-20 transition-all hover:text-pharmagency-blue">{name}</Link>
                     <a className="font-light text-pharmagency-blue underline transition-all hover:text-pharmagency-cyan" href={`https://${domain}`} target="_blank">{domain}</a>
                 </div>
                 <div className="flex items-center">

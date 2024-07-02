@@ -83,6 +83,10 @@ export default function Admin({ token }) {
                         setValue={setSearch}
                         placeholder={"Recherchez votre pharmacie..."}
                         className={"grow"} />
+                    <Link to={"/admin/ajouter"}>
+                        <div className="w-[40px] tablet:w-[32px] aspect-square border-2 border-pharmagency-white rounded-full ml-6 relative after:content-[''] before:content-[''] after:w-[16px] before:h-[16px] tablet:after:w-[12px] tablet:before:h-[12px] after:h-[2px] before:w-[2px] after:absolute before:absolute after:top-1/2 before:top-1/2 after:left-1/2 before:left-1/2 after:bg-pharmagency-white before:bg-pharmagency-white after:-translate-x-1/2 before:-translate-x-1/2 after:-translate-y-1/2 before:-translate-y-1/2 before:rounded-3xl after:rounded-3xl transition-all hover:bg-pharmagency-white hover:after:bg-pharmagency-cyan hover:before:bg-pharmagency-cyan">
+                        </div>
+                    </Link>
                 </div>
                 <Link className="ml-8" to={"/admin/marques"}>
                     <Button className={"text-pharmagency-white border border-pharmagency-white text-14 transition-all hover:bg-pharmagency-white hover:text-pharmagency-cyan font-medium whitespace-nowrap"}>
