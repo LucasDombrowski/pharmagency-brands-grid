@@ -32,50 +32,64 @@ class BrandController extends Controller
 
     public function index(Request $request)
     {
-
         $request->validate([
             /**
-             * The current search query, it will be parsed into the correct naming format. \
-             * Example : "***Lorem Ipsum***" will be interpreted as "***lorem-ipsum***"
+             * The current search query, which will be parsed into the correct naming format.
+             * Example: "***Lorem Ipsum***" will be interpreted as "***lorem-ipsum***".
              */
             "query" => "nullable|string",
+
             /**
-             * Filter by the validation status of the brand, the value must be 0 or 1.
+             * Filter by the validation status of the brand. The value must be 0 or 1.
              */
             "validated" => "nullable|boolean",
+
             /**
              * Paginate the results according to this value.
              */
             "limit" => "nullable|integer",
+
             /**
              * Sort the results by a specific client department code.
              */
             "code" => "nullable|integer|digits:2",
+
             /**
              * The current pagination page.
              */
-            "page"=>"nullable|integer"
+            "page" => "nullable|integer"
         ]);
 
+        // Start building the query for brands
         $query = Brand::query();
 
+        // Apply filters based on request parameters
+
+        // Filter by search query
         if ($request->filled("query")) {
-            $query->where("name", "like", "%".parseBrandName($request->input("query")) . "%");
+            $query->where("name", "like", "%" . parseBrandName($request->input("query")) . "%")
+                ->orderByRaw(
+                    "CASE WHEN name LIKE ? THEN 1 WHEN name LIKE ? THEN 2 ELSE 3 END",
+                    [$request->input("query"), $request->input("query") . "%"]
+                );
         }
 
+        // Filter by validation status
         if ($request->filled("validated")) {
             $query->where("validated", $request->input("validated"));
         }
 
-        
+        // Apply pagination limit
         if ($request->filled("limit")) {
             $query->take($request->input("limit"));
         }
 
+        // Apply pagination offset (if provided)
         if ($request->filled("offset")) {
             $query->skip($request->input("offset"));
         }
 
+        // Sort by client department code count (if 'code' parameter is provided)
         if ($request->filled("code")) {
             $code = $request->input("code");
             $query->withCount([
@@ -84,20 +98,43 @@ class BrandController extends Controller
                         $query->where('departmentCode', $code);
                     });
                 }
-            ])->orderBy("categories_count","desc");
+            ])->orderBy("categories_count", "desc");
         } else {
+            // Default sort by category count
             $query->withCount("categories")->orderBy("categories_count", "desc");
         }
 
+        // Retrieve paginated results
         $results = $query->paginate($request->input("limit", 10)); // Default limit of 10 per page
 
         /**
-         * Returns the results sorted by their occurences in the clients categories. If the "code" field is set, the occurences will be only determined with the clients that have the same given department code.
-         * The results are paginated by the "limit" input. If it is not set, the pagination limit is set to a default value which is 10.
-         * @body array{current_page: integer, data: array{id:int, name:string, png_url:string|null,jpg_url:string|null,validated: true}, first_page_url: string, from: integer, last_page: integer, last_page_url: string, links: array{array{url: string|null, label:string,active:bool}},next_page_url: string, path: string, per_page: integer, prev_page_url: string|null, to: integer, total: integer}
+         * Returns the results sorted by their occurrences in the client's categories.
+         * If the "code" field is set, the occurrences will be determined only with clients
+         * that have the same given department code.
+         * The results are paginated by the "limit" input. If it is not set, the pagination limit
+         * is set to a default value of 10.
+         *
+         * @body array{
+         *     current_page: integer,
+         *     data: array{id: int, name: string, png_url: string|null, jpg_url: string|null, validated: true},
+         *     first_page_url: string,
+         *     from: integer,
+         *     last_page: integer,
+         *     last_page_url: string,
+         *     links: array{
+         *         array{url: string|null, label: string, active: bool}
+         *     },
+         *     next_page_url: string|null,
+         *     path: string,
+         *     per_page: integer,
+         *     prev_page_url: string|null,
+         *     to: integer,
+         *     total: integer
+         * }
          */
         return response()->json($results);
     }
+
 
     /**
      * Add a brand to the database.
