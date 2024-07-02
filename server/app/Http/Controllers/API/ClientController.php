@@ -78,7 +78,7 @@ class ClientController extends Controller
             "name"=>"required|string",
             "domain"=>["required","string",new FQDN],
             //The french department code where the client is located at
-            "departmentCode"=>"required|integer|digits:2"
+            "departmentCode"=>"required|integer|digits:3"
         ]);
 
         $client = Client::create([
@@ -173,7 +173,7 @@ class ClientController extends Controller
             "name"=>"required|string",
             "domain"=>["required","string",new FQDN],
             //The french department code where the client is located at
-            "departmentCode"=>"required|integer|digits:2",
+            "departmentCode"=>"required|integer|digits:3",
             //A forbidden input, do not include it in the request body
             "token"=>"prohibited"
         ]);

@@ -77,8 +77,7 @@ export default function Manager({ userToken }) {
                 new: true,
                 order: count
             };
-            const test = testCategoryName(label);
-            data.id = !test ? total + count : test.id;
+            data.id = null;
             count++;
             return {
                 label,
@@ -162,6 +161,7 @@ export default function Manager({ userToken }) {
         if (test) {
             v.brands = [...test.brands];
         }
+        v.id = generateCategoryId();
         setCategories([...categories, v]);
         setCategory(v);
         setEdits(true);
@@ -218,6 +218,10 @@ export default function Manager({ userToken }) {
         }
     }
 
+    function generateCategoryId(){
+        return categories.length > 0 ? [...categories].reduce((max, obj) => (obj.id > max ? obj.id : max), -Infinity) + 1 : 1;
+    }
+
     async function saveCategoryName() {
         // eslint-disable-next-line no-restricted-globals
         const isConfirmed = confirm(`Enregister la catégorie ${optionName} ?`);
@@ -233,7 +237,7 @@ export default function Manager({ userToken }) {
                     }
                 });
                 addCategory({
-                    "id":categories.length + 1,
+                    "id":null,
                     "name":response.data.displayed_category.name,
                     "brands":[],
                     "new":true
